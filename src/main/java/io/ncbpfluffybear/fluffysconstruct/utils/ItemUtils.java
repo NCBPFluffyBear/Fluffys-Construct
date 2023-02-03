@@ -6,6 +6,7 @@ import io.ncbpfluffybear.fluffysconstruct.items.FCItem;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -73,6 +74,26 @@ public class ItemUtils {
         int id = new CustomBlockData(b, FCPlugin.getInstance()).get(Constants.FC_BLOCKMETA_KEY, PersistentDataType.INTEGER);
 
         return getFCItem(id);
+    }
+
+    /**
+     * Returns a clone of the given item with the durability set to the given percentage.
+     * Item must be damageable, otherwise a warning will be shown and the unmodified item will be returned.
+     */
+    public static ItemStack setDurability(ItemStack item, int percentage) {
+        ItemStack clone = item.clone();
+        ItemMeta meta = clone.getItemMeta();
+        if (!(meta instanceof Damageable)) {
+            FCPlugin.getInstance().getLogger().warning("Can not set the durability of " + item.getType());
+            return item;
+        }
+
+        short totalDurability = clone.getType().getMaxDurability();
+        int newDurability = totalDurability * percentage / 100;
+        ((Damageable) meta).setDamage(newDurability);
+
+        clone.setItemMeta(meta);
+        return clone;
     }
 
 }

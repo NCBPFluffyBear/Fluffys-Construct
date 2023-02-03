@@ -17,7 +17,7 @@ public class BlockClock implements Runnable {
     public void run() {
         for (Map.Entry<FCItem, Set<Location>> clockedSets : FCPlugin.getBlockRepository().getAllClocked().entrySet()) {
             for (Location location : clockedSets.getValue()) {
-                ((Clocked) clockedSets.getKey()).trigger(location);
+                ((Clocked) clockedSets.getKey()).onClock(location);
             }
         }
     }

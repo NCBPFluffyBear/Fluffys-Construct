@@ -4,6 +4,6 @@ import org.bukkit.Location;
 
 public interface Clocked {
 
-    void trigger(Location location);
+    void onClock(Location location);
 
 }

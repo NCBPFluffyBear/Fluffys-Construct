@@ -19,6 +19,10 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class FCBlockHandler implements Listener {
 
     public FCBlockHandler() {
@@ -43,13 +47,43 @@ public class FCBlockHandler implements Listener {
 
         if (item instanceof InventoryBlock) {
             FCPlugin.getBlockRepository().addInventoryBlock(location);
+            ((InventoryBlock) item).createPackage(location); // Create an empty inventory package for this block
         }
 
         System.out.println("PLACED " + item.getKey() + " (" + item.getId() + ")");
     }
 
+    /**
+     * Prevent FC Blocks from dropping their default drops
+     */
     @EventHandler
     private void onBlockBreak(BlockBreakEvent e) {
+        Block b = e.getBlock();
+
+        FCItem item = ItemUtils.getFCItem(b);
+
+        if (item != null) {
+            e.setDropItems(false);
+        }
+    }
+
+    @EventHandler
+    private void onBlockExplode(BlockExplodeEvent e) {
+        Iterator<Block> blocks = e.blockList().iterator();
+
+        while (blocks.hasNext()) {
+            Block next = blocks.next();
+            if (ItemUtils.getFCItem(next) != null) {
+                System.out.println("Removing " + next);
+                blocks.remove();
+            }
+        }
+    }
+
+    @EventHandler
+    private void onCustomBlockRemove(CustomBlockDataRemoveEvent e) {
+        System.out.println("REMOVE " + e.getCustomBlockData().get(Constants.FC_BLOCKMETA_KEY, PersistentDataType.INTEGER));
+
         Block b = e.getBlock();
 
         FCItem item = ItemUtils.getFCItem(b);
@@ -64,39 +98,7 @@ public class FCBlockHandler implements Listener {
             FCPlugin.getBlockRepository().removeInventoryBlock(b.getLocation());
         }
 
-        e.setDropItems(false);
         b.getWorld().dropItem(b.getLocation(), item.getItemStack());
-    }
-
-    @EventHandler
-    private void onBlockExplode(BlockExplodeEvent e) {
-        boolean hasCustom = false;
-
-        for (Block b : e.blockList()) {
-            if (!CustomBlockData.hasCustomBlockData(b, FCPlugin.getInstance())) {
-                return;
-            }
-
-            hasCustom = true;
-            PersistentDataContainer blockData = new CustomBlockData(e.getBlock(), FCPlugin.getInstance());
-            int id = blockData.getOrDefault(Constants.FC_BLOCKMETA_KEY, PersistentDataType.INTEGER, -1);
-
-            FCItem item = ItemUtils.getFCItem(id);
-            if (item == null) {
-                return;
-            }
-
-            b.getWorld().dropItem(b.getLocation(), item.getItemStack());
-        }
-
-        if (hasCustom) {
-            e.setYield(0f);
-        }
-    }
-
-    @EventHandler
-    private void onCustomBlockRemove(CustomBlockDataRemoveEvent e) {
-        System.out.println("REMOVE " + e.getCustomBlockData().get(Constants.FC_BLOCKMETA_KEY, PersistentDataType.INTEGER));
     }
 
     @EventHandler

@@ -5,12 +5,20 @@ import io.ncbpfluffybear.fluffysconstruct.blocks.BlockRepository;
 import io.ncbpfluffybear.fluffysconstruct.commands.BaseCommand;
 import io.ncbpfluffybear.fluffysconstruct.handlers.FCBlockHandler;
 import io.ncbpfluffybear.fluffysconstruct.handlers.FCInventoryHandler;
+import io.ncbpfluffybear.fluffysconstruct.inventory.PackageRepository;
 import io.ncbpfluffybear.fluffysconstruct.items.ItemRepository;
 import io.ncbpfluffybear.fluffysconstruct.recipes.RecipeRepository;
 import io.ncbpfluffybear.fluffysconstruct.setup.ItemSetup;
 import io.ncbpfluffybear.fluffysconstruct.setup.RecipeSetup;
 import io.ncbpfluffybear.fluffysconstruct.tasks.BlockClock;
+import io.ncbpfluffybear.fluffysconstruct.utils.Constants;
+import io.ncbpfluffybear.fluffysconstruct.utils.SaveUtils;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
 
 public class FCPlugin extends JavaPlugin {
 
@@ -18,6 +26,8 @@ public class FCPlugin extends JavaPlugin {
     private static ItemRepository itemRepository;
     private static RecipeRepository recipeRepository;
     private static BlockRepository blockRepository;
+    private static PackageRepository packageRepository;
+    private static File blocksFile;
 
     public FCPlugin() {
     }
@@ -29,6 +39,8 @@ public class FCPlugin extends JavaPlugin {
         itemRepository = new ItemRepository();
         recipeRepository = new RecipeRepository();
         blockRepository = new BlockRepository();
+        packageRepository = new PackageRepository();
+
         new ItemSetup(itemRepository).register();
         new RecipeSetup(recipeRepository).register();
 
@@ -40,11 +52,26 @@ public class FCPlugin extends JavaPlugin {
 
         CustomBlockData.registerListener(this);
 
+        blocksFile = new File(this.getDataFolder() + Constants.BLOCKS_FILE);
+
+        if (!this.getDataFolder().exists()) {
+            this.getDataFolder().mkdir();
+        }
+
+        try {
+            blocksFile.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        FileConfiguration blocksConfig = YamlConfiguration.loadConfiguration(blocksFile);
+        SaveUtils.loadBlocks(blocksConfig, blockRepository);
+
     }
 
     @Override
     public void onDisable() {
-        super.onDisable();
+        SaveUtils.saveBlocks(blocksFile, blockRepository);
     }
 
     public static FCPlugin getInstance() {
@@ -61,5 +88,9 @@ public class FCPlugin extends JavaPlugin {
 
     public static BlockRepository getBlockRepository() {
         return blockRepository;
+    }
+
+    public static PackageRepository getPackageRepository() {
+        return packageRepository;
     }
 }

@@ -9,7 +9,7 @@ import java.util.Map;
 public class ItemRepository {
 
     private final List<FCItem> fcItems;
-    private final Map<String, Integer> keyMap; // Translates typable strings to int IDs
+    private final Map<String, Integer> keyMap; // Translates typeable strings to int IDs
 
     public ItemRepository() {
         fcItems = new ArrayList<>();

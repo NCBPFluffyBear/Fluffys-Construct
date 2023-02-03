@@ -51,7 +51,7 @@ public class BlockRepository {
     }
 
     public void removeInventoryBlock(Location location) {
-        if (this.inventoryBlocks.remove(location)) {
+        if (!this.inventoryBlocks.remove(location)) {
             FCPlugin.getInstance().getLogger().warning("No block had an inventory at " + location.toString());
         }
     }

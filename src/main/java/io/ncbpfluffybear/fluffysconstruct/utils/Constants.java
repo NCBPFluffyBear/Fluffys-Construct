@@ -11,4 +11,5 @@ public class Constants {
 
     public static final NamespacedKey FC_KEY = new NamespacedKey(FCPlugin.getInstance(), "fluffysconstruct_item");
     public static final NamespacedKey FC_BLOCKMETA_KEY = new NamespacedKey(FCPlugin.getInstance(), "fluffysconstruct_block");
+    public static final String BLOCKS_FILE = "/blocks.yml";
 }

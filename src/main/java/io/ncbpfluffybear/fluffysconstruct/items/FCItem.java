@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class FCItem {
 
-    private final ItemStack item;
+    private final CustomItem item;
     private final String key;
     private int id;
 
@@ -24,22 +24,13 @@ public class FCItem {
      * Makes a copy of the item
      */
     public FCItem(String key, ItemStack item) {
-        this.item = new ItemStack(item);
+        this.item = new CustomItem(item);
         this.key = key;
     }
 
     public FCItem(String key, Material material, String name, String... lore) {
-        this.item = new ItemStack(material);
         this.key = key;
-        ItemMeta meta = this.item.getItemMeta();
-
-        meta.setDisplayName(StringUtils.color(name));
-        List<String> newLore = new ArrayList<>();
-        for (String line : lore) {
-            newLore.add(StringUtils.color(line));
-        }
-        meta.setLore(newLore);
-        this.item.setItemMeta(meta);
+        this.item = new CustomItem(material, name, lore);
     }
 
     /**
