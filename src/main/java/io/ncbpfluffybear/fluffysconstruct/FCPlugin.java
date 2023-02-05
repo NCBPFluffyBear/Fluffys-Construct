@@ -5,6 +5,7 @@ import io.ncbpfluffybear.fluffysconstruct.blocks.BlockRepository;
 import io.ncbpfluffybear.fluffysconstruct.commands.BaseCommand;
 import io.ncbpfluffybear.fluffysconstruct.handlers.FCBlockHandler;
 import io.ncbpfluffybear.fluffysconstruct.handlers.FCInventoryHandler;
+import io.ncbpfluffybear.fluffysconstruct.inventory.InventoryRepository;
 import io.ncbpfluffybear.fluffysconstruct.inventory.PackageRepository;
 import io.ncbpfluffybear.fluffysconstruct.items.ItemRepository;
 import io.ncbpfluffybear.fluffysconstruct.recipes.RecipeRepository;
@@ -27,6 +28,7 @@ public class FCPlugin extends JavaPlugin {
     private static RecipeRepository recipeRepository;
     private static BlockRepository blockRepository;
     private static PackageRepository packageRepository;
+    private static InventoryRepository inventoryRepository;
     private static File blocksFile;
 
     public FCPlugin() {
@@ -40,6 +42,7 @@ public class FCPlugin extends JavaPlugin {
         recipeRepository = new RecipeRepository();
         blockRepository = new BlockRepository();
         packageRepository = new PackageRepository();
+        inventoryRepository = new InventoryRepository();
 
         new ItemSetup(itemRepository).register();
         new RecipeSetup(recipeRepository).register();
@@ -47,7 +50,7 @@ public class FCPlugin extends JavaPlugin {
         getCommand("fluffysconstruct").setExecutor(new BaseCommand());
 
         getServer().getPluginManager().registerEvents(new FCBlockHandler(), this);
-        getServer().getPluginManager().registerEvents(new FCInventoryHandler(), this);
+        getServer().getPluginManager().registerEvents(new FCInventoryHandler(inventoryRepository), this);
         getServer().getScheduler().runTaskTimer(this, new BlockClock(), 20L, 20L);
 
         CustomBlockData.registerListener(this);
@@ -92,5 +95,9 @@ public class FCPlugin extends JavaPlugin {
 
     public static PackageRepository getPackageRepository() {
         return packageRepository;
+    }
+
+    public static InventoryRepository getInventoryRepository() {
+        return inventoryRepository;
     }
 }

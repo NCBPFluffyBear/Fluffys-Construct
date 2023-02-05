@@ -13,19 +13,19 @@ public class MachineInventory extends CustomInventory {
 
     private final int inputSlot;
     private final int outputSlot;
-    private final int processSlot;
+    private final int progressSlot;
     private final ItemStack idleStack;
-    private final ItemStack processStack;
+    private final ItemStack progressStack;
 
-    public MachineInventory(int inputSlot, int outputSlot, int processSlot, ItemStack idleStack, ItemStack processStack, InventoryTemplate template) {
+    public MachineInventory(int inputSlot, int outputSlot, int progressSlot, ItemStack idleStack, ItemStack progressStack, InventoryTemplate template) {
         super(template);
         this.inputSlot = inputSlot;
         this.outputSlot = outputSlot;
-        this.processSlot = processSlot;
+        this.progressSlot = progressSlot;
         this.idleStack = idleStack;
-        this.processStack = processStack;
+        this.progressStack = progressStack;
 
-        addClickHandler(this.processSlot, InventoryUtils.getDenyHandler());
+        addClickHandler(this.progressSlot, InventoryUtils.getDenyHandler());
     }
 
     public MachineInventory unpack(InventoryPackage pack) {
@@ -36,7 +36,7 @@ public class MachineInventory extends CustomInventory {
             SlotData slotData = data.getValue();
 
             if (slotData instanceof ProgressSlotData) {
-                setProcessPercentage(((ProgressSlotData) slotData).getProgress());
+                setProgressPercentge(((ProgressSlotData) slotData).getProgress());
             } else if (slotData instanceof StackSlotData) {
                 setItem(data.getKey(), ((StackSlotData) slotData).getItem());
             }
@@ -54,10 +54,10 @@ public class MachineInventory extends CustomInventory {
     }
 
     public void setIdle() {
-        setItem(this.processSlot, this.idleStack);
+        setItem(this.progressSlot, this.idleStack);
     }
 
-    public void setProcessPercentage(int percentage) {
-        setItem(this.processSlot, ItemUtils.setDurability(this.processStack, percentage));
+    public void setProgressPercentge(int percentage) {
+        setItem(this.progressSlot, ItemUtils.setDurability(this.progressStack, percentage));
     }
 }

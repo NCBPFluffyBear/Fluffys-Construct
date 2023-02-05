@@ -89,7 +89,7 @@ public class ItemUtils {
         }
 
         short totalDurability = clone.getType().getMaxDurability();
-        int newDurability = totalDurability * percentage / 100;
+        int newDurability = totalDurability - totalDurability * percentage / 100;
         ((Damageable) meta).setDamage(newDurability);
 
         clone.setItemMeta(meta);

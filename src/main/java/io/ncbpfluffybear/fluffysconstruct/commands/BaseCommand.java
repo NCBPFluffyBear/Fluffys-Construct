@@ -18,7 +18,7 @@ public class BaseCommand implements CommandExecutor {
 
     public BaseCommand() {
         commands = new HashMap<>();
-        addCommands(new HelpCommand(), new GiveCommand());
+        addCommands(new HelpCommand(), new GiveCommand()); // TODO Repository data dump command
     }
 
     @Override
