@@ -1,4 +1,4 @@
-# Fluffys-Construct
+# FluffysConstruct
 A modified Spigot port of Tinkers' Construct
 
 A standalone Minecraft plugin that adds Tinkers' Construct to unmodded Minecraft.

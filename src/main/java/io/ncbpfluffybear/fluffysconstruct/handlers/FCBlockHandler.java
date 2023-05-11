@@ -7,6 +7,7 @@ import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
 import io.ncbpfluffybear.fluffysconstruct.items.Clocked;
 import io.ncbpfluffybear.fluffysconstruct.items.FCItem;
 import io.ncbpfluffybear.fluffysconstruct.items.InventoryBlock;
+import io.ncbpfluffybear.fluffysconstruct.items.Placeable;
 import io.ncbpfluffybear.fluffysconstruct.utils.Constants;
 import io.ncbpfluffybear.fluffysconstruct.utils.ItemUtils;
 import org.bukkit.Location;
@@ -16,12 +17,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 public class FCBlockHandler implements Listener {
 
@@ -31,8 +29,8 @@ public class FCBlockHandler implements Listener {
     @EventHandler
     private void onBlockPlace(BlockPlaceEvent e) {
         FCItem item = ItemUtils.getFCItem(e.getItemInHand());
-        if (item == null) {
-            System.out.println("Not FC");
+
+        if (!(item instanceof Placeable)) { // Handles nulls
             return;
         }
 
@@ -47,8 +45,10 @@ public class FCBlockHandler implements Listener {
 
         if (item instanceof InventoryBlock) {
             FCPlugin.getBlockRepository().addInventoryBlock(location);
-            ((InventoryBlock) item).createPackage(location); // Create an empty inventory package for this block
+            FCPlugin.getInventoryRepository().addInventory(location, ((InventoryBlock) item).createInventory()); // Create an empty inventory for this block
         }
+
+        ((Placeable) item).onPlace(location);
 
         System.out.println("PLACED " + item.getKey() + " (" + item.getId() + ")");
     }
@@ -88,7 +88,9 @@ public class FCBlockHandler implements Listener {
 
         FCItem item = ItemUtils.getFCItem(b);
 
-        if (item == null) {return;}
+        if (item == null) {
+            return;
+        }
 
         if (item instanceof Clocked) {
             FCPlugin.getBlockRepository().removeClocked(item, b.getLocation());
@@ -97,6 +99,8 @@ public class FCBlockHandler implements Listener {
         if (item instanceof InventoryBlock) {
             FCPlugin.getBlockRepository().removeInventoryBlock(b.getLocation());
         }
+
+        ((Placeable) item).onBreak(b.getLocation()); // All placed blocks MUST be placeable
 
         b.getWorld().dropItem(b.getLocation(), item.getItemStack());
     }

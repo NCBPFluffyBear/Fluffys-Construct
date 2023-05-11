@@ -6,12 +6,14 @@ import io.ncbpfluffybear.fluffysconstruct.commands.BaseCommand;
 import io.ncbpfluffybear.fluffysconstruct.handlers.FCBlockHandler;
 import io.ncbpfluffybear.fluffysconstruct.handlers.FCInventoryHandler;
 import io.ncbpfluffybear.fluffysconstruct.inventory.InventoryRepository;
-import io.ncbpfluffybear.fluffysconstruct.inventory.PackageRepository;
 import io.ncbpfluffybear.fluffysconstruct.items.ItemRepository;
 import io.ncbpfluffybear.fluffysconstruct.recipes.RecipeRepository;
 import io.ncbpfluffybear.fluffysconstruct.setup.ItemSetup;
 import io.ncbpfluffybear.fluffysconstruct.setup.RecipeSetup;
 import io.ncbpfluffybear.fluffysconstruct.tasks.BlockClock;
+import io.ncbpfluffybear.fluffysconstruct.trackers.FuelStorageTracker;
+import io.ncbpfluffybear.fluffysconstruct.trackers.MachineProgress;
+import io.ncbpfluffybear.fluffysconstruct.trackers.MachineProgressTracker;
 import io.ncbpfluffybear.fluffysconstruct.utils.Constants;
 import io.ncbpfluffybear.fluffysconstruct.utils.SaveUtils;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -27,8 +29,9 @@ public class FCPlugin extends JavaPlugin {
     private static ItemRepository itemRepository;
     private static RecipeRepository recipeRepository;
     private static BlockRepository blockRepository;
-    private static PackageRepository packageRepository;
     private static InventoryRepository inventoryRepository;
+    private static MachineProgressTracker machineProgressTracker;
+    private static FuelStorageTracker fuelStorageTracker;
     private static File blocksFile;
 
     public FCPlugin() {
@@ -41,8 +44,9 @@ public class FCPlugin extends JavaPlugin {
         itemRepository = new ItemRepository();
         recipeRepository = new RecipeRepository();
         blockRepository = new BlockRepository();
-        packageRepository = new PackageRepository();
         inventoryRepository = new InventoryRepository();
+        machineProgressTracker = new MachineProgressTracker();
+        fuelStorageTracker = new FuelStorageTracker();
 
         new ItemSetup(itemRepository).register();
         new RecipeSetup(recipeRepository).register();
@@ -93,11 +97,15 @@ public class FCPlugin extends JavaPlugin {
         return blockRepository;
     }
 
-    public static PackageRepository getPackageRepository() {
-        return packageRepository;
-    }
-
     public static InventoryRepository getInventoryRepository() {
         return inventoryRepository;
+    }
+
+    public static MachineProgressTracker getMachineProgressTracker() {
+        return machineProgressTracker;
+    }
+
+    public static FuelStorageTracker getFuelStorageTracker() {
+        return fuelStorageTracker;
     }
 }

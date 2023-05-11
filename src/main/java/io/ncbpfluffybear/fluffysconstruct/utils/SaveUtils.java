@@ -39,7 +39,9 @@ public class SaveUtils {
             }
 
             if (item instanceof InventoryBlock) {
-                repository.addInventoryBlock(loc);
+                repository.addInventoryBlock(loc); // Register block
+                FCPlugin.getInventoryRepository().addInventory(loc, ((InventoryBlock) item).createInventory()); // Apply inventory template
+                // TODO Load saved inventory
             }
         }
     }

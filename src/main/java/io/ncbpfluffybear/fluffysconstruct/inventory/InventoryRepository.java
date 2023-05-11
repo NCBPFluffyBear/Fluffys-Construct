@@ -1,50 +1,34 @@
 package io.ncbpfluffybear.fluffysconstruct.inventory;
 
-import io.ncbpfluffybear.fluffysconstruct.data.DoubleKeyedMap;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class InventoryRepository {
 
-    private final DoubleKeyedMap<Location, Player, CustomInventory> inventories;
+    private final Map<Location, CustomInventory> inventories;
 
     public InventoryRepository() {
-        this.inventories = new DoubleKeyedMap<>();
+        this.inventories = new HashMap<>();
     }
 
     /**
      * Adds an inventory to the repository
      *
-     * @param player    is the player who opened this inventory
      * @param location  is the location of the block hosting this inventory
      * @param inventory is the inventory object
      */
-    public void addInventory(Location location, Player player, CustomInventory inventory) {
-        this.inventories.put(location, player, inventory);
+    public void addInventory(Location location, CustomInventory inventory) {
+        this.inventories.put(location, inventory);
     }
 
     public void removeInventory(Location location) {
-        this.inventories.removeFirst(location);
-    }
-
-    public void removeInventory(Player player) {
-        this.inventories.removeSecond(player);
+        this.inventories.remove(location);
     }
 
     public CustomInventory getInventory(Location location) {
-        return this.inventories.getFirst(location);
-    }
-
-    public CustomInventory getInventory(Player player) {
-        return this.inventories.getSecond(player);
-    }
-
-    public boolean hasPlayer(Player player) {
-        return this.inventories.hasSecond(player);
-    }
-
-    public boolean hasLocation(Location location) {
-        return this.inventories.hasFirst(location);
+        return this.inventories.get(location);
     }
 
 }

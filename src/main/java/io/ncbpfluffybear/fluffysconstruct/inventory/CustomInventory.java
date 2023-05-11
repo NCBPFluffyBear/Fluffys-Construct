@@ -1,20 +1,17 @@
 package io.ncbpfluffybear.fluffysconstruct.inventory;
 
-import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
 import io.ncbpfluffybear.fluffysconstruct.data.Tuple;
-import io.ncbpfluffybear.fluffysconstruct.inventory.slotdata.ProgressSlotData;
-import io.ncbpfluffybear.fluffysconstruct.inventory.slotdata.SlotData;
 import io.ncbpfluffybear.fluffysconstruct.items.CustomItem;
 import io.ncbpfluffybear.fluffysconstruct.utils.InventoryUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,10 +36,6 @@ public class CustomInventory {
             clickHandlers.put(itemPair.getFirst(), itemPair.getThird());
         }
     }
-
-//    public InventoryBuilder(InventoryPackage invPackage) {
-//
-//    }
 
     /**
      * To be used after the inventory is already built.
@@ -75,6 +68,11 @@ public class CustomInventory {
         }
 
         return this.inv;
+    }
+
+    @Nullable
+    public ItemStack getItemInSlot(int slot) {
+        return getInventory().getItem(slot);
     }
 
     public void open(Player... players) {

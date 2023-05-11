@@ -23,6 +23,11 @@ public class CustomItem extends ItemStack {
         this.setItemMeta(meta);
     }
 
+    public CustomItem(Material material, int amount, String name, String... lore) {
+        this(material, name, lore);
+        this.setAmount(amount);
+    }
+
     public CustomItem(ItemStack item) {
         super(item);
     }
