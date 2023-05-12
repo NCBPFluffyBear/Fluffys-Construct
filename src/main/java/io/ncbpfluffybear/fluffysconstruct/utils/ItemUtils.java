@@ -3,6 +3,8 @@ package io.ncbpfluffybear.fluffysconstruct.utils;
 import com.jeff_media.customblockdata.CustomBlockData;
 import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
 import io.ncbpfluffybear.fluffysconstruct.items.FCItem;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -48,11 +50,11 @@ public class ItemUtils {
             return null;
         }
 
-        if (!meta.getPersistentDataContainer().has(Constants.FC_KEY, PersistentDataType.INTEGER)) {
+        if (!meta.getPersistentDataContainer().has(Constants.FC_ITEM_KEY, PersistentDataType.INTEGER)) {
             return null;
         }
 
-        int id = meta.getPersistentDataContainer().get(Constants.FC_KEY, PersistentDataType.INTEGER);
+        int id = meta.getPersistentDataContainer().get(Constants.FC_ITEM_KEY, PersistentDataType.INTEGER);
 
         return FCPlugin.getItemRepository().getItemById(id);
     }
@@ -71,7 +73,11 @@ public class ItemUtils {
     public static FCItem getFCItem(Block b) {
         if (!CustomBlockData.hasCustomBlockData(b, FCPlugin.getInstance())) {return null;}
 
-        int id = new CustomBlockData(b, FCPlugin.getInstance()).get(Constants.FC_BLOCKMETA_KEY, PersistentDataType.INTEGER);
+        Integer id = new CustomBlockData(b, FCPlugin.getInstance()).get(Constants.FC_BLOCK_KEY, PersistentDataType.INTEGER);
+        if (id == null) {
+            Bukkit.getLogger().severe("A block was broken at " + b.getLocation() + " but no ID was associated with the block.");
+            return null;
+        }
 
         return getFCItem(id);
     }
@@ -94,6 +100,10 @@ public class ItemUtils {
 
         clone.setItemMeta(meta);
         return clone;
+    }
+
+    public static boolean isItemSimilar(ItemStack first, ItemStack second) {
+        return first.isSimilar(second);
     }
 
 }

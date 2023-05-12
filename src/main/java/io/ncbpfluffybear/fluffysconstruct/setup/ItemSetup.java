@@ -15,13 +15,11 @@ public class ItemSetup {
         this.repository = repository;
     }
 
-    /**
-     * WARNING: Changing the registration order will affect item IDs!
-     */
     public void register() {
         repository.registerItem(ItemList.GROUT);
         repository.registerItem(ItemList.SEARED_BRICKS);
         repository.registerItem(ItemList.FURNACE);
+        repository.registerItem(ItemList.CONTROLLER);
     }
 
 }

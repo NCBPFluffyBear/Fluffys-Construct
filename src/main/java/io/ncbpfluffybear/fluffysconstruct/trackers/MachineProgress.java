@@ -10,14 +10,16 @@ public class MachineProgress {
 
     public int nextStage(int totalStages) {
         if (this.currentStage++ >= totalStages) {
-            this.currentStage = 0;
+            this.currentStage = 1;
         }
 
         return this.currentStage;
     }
 
     public void reset() {
-        this.currentStage = 0;
+        if (this.currentStage != 0) {
+            this.currentStage = 0;
+        }
     }
 
 }

@@ -11,6 +11,12 @@ public class MachineUtils {
         throw new InstantiationError();
     }
 
+    /**
+     * Increments a machine's stage count.
+     * Stage 0 and the max stage are considered to be equal.
+     * Otherwise, there would be a 1 tick delay between operations.
+     * If a machine fails to continue, use reset() instead.
+     */
     public static int tick(Location location, int totalStages) { // TODO: Save ticks persistently. For now, ticks will restart at 0
         return FCPlugin.getMachineProgressTracker().getOrCreateProgress(location).nextStage(totalStages);
     }

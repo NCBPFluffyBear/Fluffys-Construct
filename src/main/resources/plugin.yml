@@ -3,7 +3,7 @@ author: NCBPFluffyBear
 description: A Spigot port of the popular mod Tinkers' Construct
 main: io.ncbpfluffybear.fluffysconstruct.FCPlugin
 version: ${project.version}
-api-version: 1.16
+api-version: 1.17
 
 commands:
   fluffysconstruct:

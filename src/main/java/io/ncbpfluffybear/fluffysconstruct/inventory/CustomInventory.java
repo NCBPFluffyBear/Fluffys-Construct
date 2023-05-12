@@ -5,6 +5,7 @@ import io.ncbpfluffybear.fluffysconstruct.items.CustomItem;
 import io.ncbpfluffybear.fluffysconstruct.utils.InventoryUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -24,6 +25,7 @@ public class CustomInventory {
     private final ItemStack[] items;
     private Inventory inv;
     private final Map<Integer, InvClickHandler> clickHandlers;
+    private Location location;
 
     public CustomInventory(InventoryTemplate template) {
         this.title = template.getTitle();
@@ -89,12 +91,19 @@ public class CustomInventory {
         clickHandlers.put(slot, handler);
     }
 
-    public boolean callClickHandler(Player player, int slot, ItemStack clickedItem, ClickType clickType) {
+    public boolean callClickHandler(Player player, CustomInventory customInv, int slot, ItemStack clickedItem, ClickType clickType) {
         if (clickHandlers.containsKey(slot)) {
-            return clickHandlers.get(slot).onClick(player, slot, clickedItem, clickType);
+            return clickHandlers.get(slot).onClick(player, customInv, slot, clickedItem, clickType);
         }
 
         return true;
     }
 
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
 }

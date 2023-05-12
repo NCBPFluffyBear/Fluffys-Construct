@@ -60,12 +60,12 @@ public class FCInventoryHandler implements Listener {
         boolean cancelEvent = false;
 
         if (this.inventories.containsKey(player)) {
-            CustomInventory handledInventory = this.repository.getInventory(this.inventories.get(player));
-            if (e.getClickedInventory() != handledInventory.getInventory()) {
+            CustomInventory customInv = this.repository.getInventory(this.inventories.get(player));
+            if (e.getClickedInventory() != customInv.getInventory()) {
                 return;
             }
 
-            cancelEvent = !handledInventory.callClickHandler(player, e.getSlot(), e.getCurrentItem(), e.getClick());
+            cancelEvent = !customInv.callClickHandler(player, customInv, e.getSlot(), e.getCurrentItem(), e.getClick());
         }
 
         if (cancelEvent) {

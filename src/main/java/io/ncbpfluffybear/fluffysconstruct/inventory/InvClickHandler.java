@@ -6,6 +6,6 @@ import org.bukkit.inventory.ItemStack;
 
 public interface InvClickHandler {
 
-    boolean onClick(Player player, int slot, ItemStack clickedItem, ClickType clickType);
+    boolean onClick(Player player, CustomInventory customInv, int slot, ItemStack clickedItem, ClickType clickType);
 
 }

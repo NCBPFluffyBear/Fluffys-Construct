@@ -8,11 +8,11 @@ import java.util.Map;
 
 public class ItemRepository {
 
-    private final List<FCItem> fcItems;
+    private final Map<Integer, FCItem> fcItems;
     private final Map<String, Integer> keyMap; // Translates typeable strings to int IDs
 
     public ItemRepository() {
-        fcItems = new ArrayList<>();
+        fcItems = new HashMap<>();
         keyMap = new HashMap<>();
     }
 
@@ -21,9 +21,8 @@ public class ItemRepository {
      * @param item the {@link FCItem} to register
      */
     public void registerItem(FCItem item) {
-        int id = fcItems.size();
-        this.fcItems.add(item.setId(id));
-        this.keyMap.put(item.getKey(), id);
+        this.fcItems.put(item.getId(), item);
+        this.keyMap.put(item.getKey(), item.getId());
     }
 
     @Nullable

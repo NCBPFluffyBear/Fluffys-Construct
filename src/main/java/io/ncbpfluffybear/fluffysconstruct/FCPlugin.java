@@ -4,6 +4,7 @@ import com.jeff_media.customblockdata.CustomBlockData;
 import io.ncbpfluffybear.fluffysconstruct.blocks.BlockRepository;
 import io.ncbpfluffybear.fluffysconstruct.commands.BaseCommand;
 import io.ncbpfluffybear.fluffysconstruct.handlers.FCBlockHandler;
+import io.ncbpfluffybear.fluffysconstruct.handlers.FCEntityHandler;
 import io.ncbpfluffybear.fluffysconstruct.handlers.FCInventoryHandler;
 import io.ncbpfluffybear.fluffysconstruct.inventory.InventoryRepository;
 import io.ncbpfluffybear.fluffysconstruct.items.ItemRepository;
@@ -55,6 +56,7 @@ public class FCPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new FCBlockHandler(), this);
         getServer().getPluginManager().registerEvents(new FCInventoryHandler(inventoryRepository), this);
+        getServer().getPluginManager().registerEvents(new FCEntityHandler(), this);
         getServer().getScheduler().runTaskTimer(this, new BlockClock(), 20L, 20L);
 
         CustomBlockData.registerListener(this);
