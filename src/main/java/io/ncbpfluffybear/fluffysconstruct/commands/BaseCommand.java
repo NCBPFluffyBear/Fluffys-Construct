@@ -2,6 +2,7 @@ package io.ncbpfluffybear.fluffysconstruct.commands;
 
 import io.ncbpfluffybear.fluffysconstruct.commands.subcommands.GiveCommand;
 import io.ncbpfluffybear.fluffysconstruct.commands.subcommands.HelpCommand;
+import io.ncbpfluffybear.fluffysconstruct.commands.subcommands.TestCommand;
 import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,7 +19,7 @@ public class BaseCommand implements CommandExecutor {
 
     public BaseCommand() {
         commands = new HashMap<>();
-        addCommands(new HelpCommand(), new GiveCommand()); // TODO Repository data dump command
+        addCommands(new HelpCommand(), new GiveCommand(), new TestCommand()); // TODO Repository data dump command
     }
 
     @Override

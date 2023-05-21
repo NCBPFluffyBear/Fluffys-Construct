@@ -20,6 +20,7 @@ public class ItemSetup {
         repository.registerItem(ItemList.SEARED_BRICKS);
         repository.registerItem(ItemList.FURNACE);
         repository.registerItem(ItemList.CONTROLLER);
+        repository.registerItem(ItemList.SEARED_TANK);
     }
 
 }

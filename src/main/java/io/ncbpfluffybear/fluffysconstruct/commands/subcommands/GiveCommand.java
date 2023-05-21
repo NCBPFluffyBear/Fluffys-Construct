@@ -15,7 +15,7 @@ public class GiveCommand implements SubCommand {
         FCItem item = ItemUtils.getFCItem(itemKey);
 
         if (item == null) {
-            ChatUtils.send(sender, "&cThere is no item with the key " + itemKey + "!");
+            ChatUtils.sendMsg(sender, "COMMANDS.GIVE.NO_ITEM", itemKey );
             return;
         }
 

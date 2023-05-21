@@ -3,6 +3,9 @@ package io.ncbpfluffybear.fluffysconstruct.handlers;
 import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
 import io.ncbpfluffybear.fluffysconstruct.inventory.CustomInventory;
 import io.ncbpfluffybear.fluffysconstruct.inventory.InventoryRepository;
+import io.ncbpfluffybear.fluffysconstruct.items.FCItem;
+import io.ncbpfluffybear.fluffysconstruct.items.InventoryBlock;
+import io.ncbpfluffybear.fluffysconstruct.utils.ItemUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -18,25 +21,32 @@ import java.util.Map;
 
 public class FCInventoryHandler implements Listener {
 
-    private final Map<Player, Location> inventories;
+    private final Map<Player, Location> openInventories;
     private final InventoryRepository repository;
 
     public FCInventoryHandler(InventoryRepository repository) {
-        this.inventories = new HashMap<>();
+        this.openInventories = new HashMap<>();
         this.repository = repository;
     }
 
+    /**
+     * Attempts to open an inventory for a player
+     */
     @EventHandler
     private void onOpen(PlayerInteractEvent e) {
-        if (!e.hasBlock() || e.getAction() != Action.RIGHT_CLICK_BLOCK) { // 1st condition redundant?
+        if (e.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
 
         Block block = e.getClickedBlock();
 
-        if (FCPlugin.getBlockRepository().isInventoryBlock(block.getLocation())) {
-            this.inventories.put(e.getPlayer(), block.getLocation());
-            FCPlugin.getInventoryRepository().getInventory(block.getLocation()).open(e.getPlayer());
+        if (FCPlugin.getInventoryRepository().hasInventory(block.getLocation())) {
+            this.openInventories.put(e.getPlayer(), block.getLocation());
+            CustomInventory inv = repository.getInventory(block.getLocation());
+            FCItem fcItem = ItemUtils.getFCItem(block);
+            if (((InventoryBlock) fcItem).onOpen(inv, e.getPlayer(), e.getItem())) {
+                inv.open(e.getPlayer());
+            }
             e.setCancelled(true);
         }
 
@@ -44,7 +54,7 @@ public class FCInventoryHandler implements Listener {
 
     @EventHandler
     private void onClose(InventoryCloseEvent e) {
-        this.inventories.remove((Player) e.getPlayer());
+        this.openInventories.remove((Player) e.getPlayer());
     }
 
     /**
@@ -59,8 +69,8 @@ public class FCInventoryHandler implements Listener {
         Player player = (Player) e.getWhoClicked();
         boolean cancelEvent = false;
 
-        if (this.inventories.containsKey(player)) {
-            CustomInventory customInv = this.repository.getInventory(this.inventories.get(player));
+        if (this.openInventories.containsKey(player)) {
+            CustomInventory customInv = this.repository.getInventory(this.openInventories.get(player));
             if (e.getClickedInventory() != customInv.getInventory()) {
                 return;
             }

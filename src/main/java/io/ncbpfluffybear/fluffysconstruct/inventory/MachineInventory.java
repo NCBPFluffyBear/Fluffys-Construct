@@ -2,6 +2,7 @@ package io.ncbpfluffybear.fluffysconstruct.inventory;
 
 import io.ncbpfluffybear.fluffysconstruct.utils.InventoryUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.ItemUtils;
+import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nullable;
@@ -14,8 +15,8 @@ public class MachineInventory extends CustomInventory {
     private final ItemStack idleStack;
     private final ItemStack progressStack;
 
-    public MachineInventory(int inputSlot, int outputSlot, int progressSlot, ItemStack idleStack, ItemStack progressStack, InventoryTemplate template) {
-        super(template);
+    public MachineInventory(int inputSlot, int outputSlot, int progressSlot, ItemStack idleStack, ItemStack progressStack, InventoryTemplate template, Location location) {
+        super(template, location);
         this.inputSlot = inputSlot;
         this.outputSlot = outputSlot;
         this.progressSlot = progressSlot;

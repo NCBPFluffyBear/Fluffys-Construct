@@ -2,6 +2,9 @@ package io.ncbpfluffybear.fluffysconstruct.items;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class Placeable extends FCItem {
 
@@ -14,6 +17,10 @@ public class Placeable extends FCItem {
     }
 
     public void onPlace(Location location) {
+
+    }
+
+    public void onInteract(Block block, Player player, ItemStack item) {
 
     }
 

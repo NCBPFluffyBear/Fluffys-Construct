@@ -9,15 +9,18 @@ import io.ncbpfluffybear.fluffysconstruct.items.Clocked;
 import io.ncbpfluffybear.fluffysconstruct.items.FCItem;
 import io.ncbpfluffybear.fluffysconstruct.items.InventoryBlock;
 import io.ncbpfluffybear.fluffysconstruct.items.Placeable;
+import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.Constants;
 import io.ncbpfluffybear.fluffysconstruct.utils.ItemUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Iterator;
@@ -46,21 +49,20 @@ public class FCBlockHandler implements Listener {
         Location location = e.getBlockPlaced().getLocation();
 
         if (item instanceof Clocked) {
-            FCPlugin.getBlockRepository().addClocked(item, location);
+            FCPlugin.getBlockRepository().addClockedBlock(item, location);
         }
 
         if (item instanceof InventoryBlock) {
-            FCPlugin.getBlockRepository().addInventoryBlock(location);
-            CustomInventory inventory = ((InventoryBlock) item).createInventory();
+            FCPlugin.getBlockRepository().addInventoryBlock(item, location);
+            CustomInventory inventory = ((InventoryBlock) item).createInventory(location);
             if (inventory != null) {
-                inventory.setLocation(location);
-                FCPlugin.getInventoryRepository().addInventory(location, inventory); // Create an empty inventory for this block
+                FCPlugin.getInventoryRepository().putInventory(location, inventory); // Create an empty inventory for this block
             }
         }
 
         ((Placeable) item).onPlace(location);
 
-        System.out.println("PLACED " + item.getKey() + " (" + item.getId() + ")");
+        ChatUtils.broadcast("PLACED " + item.getKey() + " (" + item.getId() + ")");
     }
 
     /**
@@ -84,7 +86,6 @@ public class FCBlockHandler implements Listener {
         while (blocks.hasNext()) {
             Block next = blocks.next();
             if (ItemUtils.getFCItem(next) != null) {
-                System.out.println("Removing " + next);
                 blocks.remove();
             }
         }
@@ -92,32 +93,48 @@ public class FCBlockHandler implements Listener {
 
     @EventHandler
     private void onCustomBlockRemove(CustomBlockDataRemoveEvent e) {
-        System.out.println("REMOVE " + e.getCustomBlockData().get(Constants.FC_BLOCK_KEY, PersistentDataType.INTEGER));
+        ChatUtils.broadcast("REMOVE " + e.getCustomBlockData().get(Constants.FC_BLOCK_KEY, PersistentDataType.INTEGER));
 
-        Block b = e.getBlock();
+        Location location = e.getBlock().getLocation();
 
-        FCItem item = ItemUtils.getFCItem(b);
+        FCItem item = ItemUtils.getFCItem(e.getBlock());
 
         if (item == null) {
             return;
         }
 
         if (item instanceof Clocked) {
-            FCPlugin.getBlockRepository().removeClocked(item, b.getLocation());
+            FCPlugin.getBlockRepository().removeClockedBlock(item, location);
         }
 
         if (item instanceof InventoryBlock) {
-            FCPlugin.getBlockRepository().removeInventoryBlock(b.getLocation());
+            FCPlugin.getBlockRepository().removeInventoryBlock(item, location);
+            FCPlugin.getInventoryRepository().removeInventory(location);
         }
 
-        ((Placeable) item).onBreak(b.getLocation()); // All placed blocks MUST be placeable
+        ((Placeable) item).onBreak(location); // All placed blocks MUST be placeable
 
-        b.getWorld().dropItem(b.getLocation(), item.getItemStack());
+        location.getWorld().dropItem(location, item.getItemStack());
     }
 
     @EventHandler
     private void onCustomBlockMove(CustomBlockDataMoveEvent e) {
         e.setCancelled(true); // TODO This does not actually prevent block movements!
-        System.out.println("MOVE " + e.getCustomBlockData().get(Constants.FC_BLOCK_KEY, PersistentDataType.INTEGER));
+        ChatUtils.broadcast(e.getBukkitEvent().getEventName(), "MOVE " + e.getCustomBlockData().get(Constants.FC_BLOCK_KEY, PersistentDataType.INTEGER));
+    }
+
+    @EventHandler
+    private void onOpen(PlayerInteractEvent e) {
+        if (e.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+
+        Block block = e.getClickedBlock();
+        FCItem fcBlock = ItemUtils.getFCItem(block);
+
+        if (fcBlock instanceof Placeable) {
+            ((Placeable) fcBlock).onInteract(block, e.getPlayer(), e.getItem());
+        }
+
     }
 }

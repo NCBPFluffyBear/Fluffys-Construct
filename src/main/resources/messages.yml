@@ -1,0 +1,10 @@
+COMMANDS:
+  GIVE:
+    NO_ITEM: "&cThere is no item with the key {1}!"
+ITEMS:
+  CONTROLLER:
+    MISSING_BRICKS: "&cSeared bricks missing at {1}"
+    SUCCESSFUL_CREATION: "&aSuccessfully created a smeltery of depth {1}"
+  SEARED_TANK:
+    MAX_LAVA_CAPACITY: "&cThis Seared Tank is at max capacity"
+    LAVA_STORED: "&eThis Seared Tank has {1} buckets of lava"

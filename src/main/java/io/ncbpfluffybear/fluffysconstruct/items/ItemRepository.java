@@ -1,5 +1,7 @@
 package io.ncbpfluffybear.fluffysconstruct.items;
 
+import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
+
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +23,10 @@ public class ItemRepository {
      * @param item the {@link FCItem} to register
      */
     public void registerItem(FCItem item) {
+        if (fcItems.containsKey(item.getId())) {
+            ChatUtils.logError("Item " + item);
+            return;
+        }
         this.fcItems.put(item.getId(), item);
         this.keyMap.put(item.getKey(), item.getId());
     }

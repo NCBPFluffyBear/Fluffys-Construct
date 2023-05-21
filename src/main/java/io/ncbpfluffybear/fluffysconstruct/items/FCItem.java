@@ -47,4 +47,9 @@ public class FCItem {
     public int getId() {
         return this.id;
     }
+
+    @Override
+    public String toString() {
+        return key + ":" + id + ":" + item.getType();
+    }
 }

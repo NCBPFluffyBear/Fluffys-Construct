@@ -12,14 +12,14 @@ import java.util.Set;
 public class BlockRepository {
 
     private final Map<FCItem, Set<Location>> clockedBlocks; // All clocked blocks
-    private final Set<Location> inventoryBlocks;
+    private final Map<FCItem, Set<Location>> inventoryBlocks;
 
     public BlockRepository() {
         this.clockedBlocks = new HashMap<>();
-        this.inventoryBlocks = new HashSet<>();
+        this.inventoryBlocks = new HashMap<>();
     }
 
-    public void addClocked(FCItem fcItem, Location location) {
+    public void addClockedBlock(FCItem fcItem, Location location) {
         if (!this.clockedBlocks.containsKey(fcItem)) {
             this.clockedBlocks.put(fcItem, new HashSet<>());
         }
@@ -27,7 +27,7 @@ public class BlockRepository {
         this.clockedBlocks.get(fcItem).add(location);
     }
 
-    public void removeClocked(FCItem fcItem, Location location) {
+    public void removeClockedBlock(FCItem fcItem, Location location) {
         if (!this.clockedBlocks.containsKey(fcItem)) {
             FCPlugin.getInstance().getLogger().warning("No clocked blocks for key " + fcItem.getKey());
             return;
@@ -42,17 +42,26 @@ public class BlockRepository {
         return this.clockedBlocks;
     }
 
-    public void addInventoryBlock(Location location) {
-        this.inventoryBlocks.add(location);
-    }
-
-    public boolean isInventoryBlock(Location location) {
-        return this.inventoryBlocks.contains(location);
-    }
-
-    public void removeInventoryBlock(Location location) {
-        if (!this.inventoryBlocks.remove(location)) {
-            FCPlugin.getInstance().getLogger().warning("No block had an inventory at " + location.toString());
+    public void addInventoryBlock(FCItem fcItem, Location location) {
+        if (!this.inventoryBlocks.containsKey(fcItem)) {
+            this.inventoryBlocks.put(fcItem, new HashSet<>());
         }
+
+        this.inventoryBlocks.get(fcItem).add(location);
+    }
+
+    public void removeInventoryBlock(FCItem fcItem, Location location) {
+        if (!this.inventoryBlocks.containsKey(fcItem)) {
+            FCPlugin.getInstance().getLogger().warning("No inventory blocks for key " + fcItem.getKey());
+            return;
+        }
+
+        if (!this.inventoryBlocks.get(fcItem).remove(location)) {
+            FCPlugin.getInstance().getLogger().warning("No block has an inventory at " + location.toString() + " for key " + fcItem.getKey());
+        }
+    }
+
+    public Map<FCItem, Set<Location>> getAllInventoryLocations() {
+        return this.inventoryBlocks;
     }
 }

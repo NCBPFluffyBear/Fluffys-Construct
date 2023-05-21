@@ -1,33 +1,38 @@
 package io.ncbpfluffybear.fluffysconstruct.inventory;
 
 import io.ncbpfluffybear.fluffysconstruct.data.Tuple;
+import io.ncbpfluffybear.fluffysconstruct.data.serialize.Serialize;
 import io.ncbpfluffybear.fluffysconstruct.items.CustomItem;
 import io.ncbpfluffybear.fluffysconstruct.utils.InventoryUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CustomInventory {
 
-    private final CustomItem background = new CustomItem(Material.ORANGE_STAINED_GLASS_PANE, " ");
+    private final CustomItem background = new CustomItem(Material.BLACK_STAINED_GLASS_PANE, " ");
 
     private final String title;
     private final int size;
     private final ItemStack[] items;
     private Inventory inv;
     private final Map<Integer, InvClickHandler> clickHandlers;
-    private Location location;
+    private final Location location;
+    private final int[] serializeSlots;
 
-    public CustomInventory(InventoryTemplate template) {
+    public CustomInventory(InventoryTemplate template, Location location) {
         this.title = template.getTitle();
         this.size = template.getSize();
         this.items = new ItemStack[this.size];
@@ -37,6 +42,8 @@ public class CustomInventory {
             items[itemPair.getFirst()] = itemPair.getSecond();
             clickHandlers.put(itemPair.getFirst(), itemPair.getThird());
         }
+        this.location = location;
+        this.serializeSlots = template.getSerializeSlots();
     }
 
     /**
@@ -99,11 +106,22 @@ public class CustomInventory {
         return true;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public Location getLocation() {
+        return this.location;
     }
 
-    public Location getLocation() {
-        return location;
+    /**
+     * Packages items in all serializeSlots
+     */
+    public String serialize() {
+        if (serializeSlots == null) {
+            return null;
+        }
+
+        Map<Integer, ItemStack> toSerialize = new HashMap<>();
+        for (int slot : serializeSlots) {
+            toSerialize.put(slot, getItemInSlot(slot));
+        }
+        return Serialize.serializeItems(toSerialize);
     }
 }

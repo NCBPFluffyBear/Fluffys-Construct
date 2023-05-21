@@ -15,6 +15,7 @@ import io.ncbpfluffybear.fluffysconstruct.utils.ItemUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.MachineUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
@@ -26,8 +27,11 @@ public class Furnace extends Placeable implements Clocked, InventoryBlock {
 
     private static final int PROGRESS_SLOT = 22;
 
-    private static final int FUEL_SLOT = 31;
+    public static final int FUEL_SLOT = 31;
     private static final int FUEL_INDICATOR = 19;
+
+    public static final int INPUT_SLOT = 13;
+    public static final int OUTPUT_SLOT = 24;
 
     private static final Map<FCItem, FCItem> recipes = Map.of(
             ItemList.GROUT, ItemList.SEARED_BRICKS
@@ -103,11 +107,16 @@ public class Furnace extends Placeable implements Clocked, InventoryBlock {
     }
 
     @Override
-    public CustomInventory createInventory() {
-        return new MachineInventory(13, 24, PROGRESS_SLOT,
+    public CustomInventory createInventory(Location location) {
+        return new MachineInventory(INPUT_SLOT, OUTPUT_SLOT, PROGRESS_SLOT,
                 new CustomItem(Material.BLACK_STAINED_GLASS_PANE, "&7Idle"), new CustomItem(Material.FLINT_AND_STEEL, "&cProgress"),
-                InventoryTemplate.FURNACE
+                InventoryTemplate.FURNACE, location
         );
+    }
+
+    @Override
+    public boolean onOpen(CustomInventory customInventory, Player player) {
+        return true;
     }
 
     @Override
@@ -118,6 +127,9 @@ public class Furnace extends Placeable implements Clocked, InventoryBlock {
     @Override
     public void onBreak(Location location) {
         FCPlugin.getMachineProgressTracker().deleteProgress(location);
+
+        MachineInventory inventory = ((MachineInventory) FCPlugin.getInventoryRepository().getInventory(location));
+        // TODO Drop items in slots
     }
 
 }

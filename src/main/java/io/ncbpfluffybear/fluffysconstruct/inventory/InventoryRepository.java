@@ -1,16 +1,21 @@
 package io.ncbpfluffybear.fluffysconstruct.inventory;
 
 import org.bukkit.Location;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class InventoryRepository {
 
     private final Map<Location, CustomInventory> inventories;
+    private final Set<Location> toRemove; // For database updates
 
     public InventoryRepository() {
         this.inventories = new HashMap<>();
+        this.toRemove = new HashSet<>();
     }
 
     /**
@@ -19,16 +24,37 @@ public class InventoryRepository {
      * @param location  is the location of the block hosting this inventory
      * @param inventory is the inventory object
      */
-    public void addInventory(Location location, CustomInventory inventory) {
+    public void putInventory(Location location, CustomInventory inventory) {
         this.inventories.put(location, inventory);
+        this.toRemove.remove(location);
     }
 
     public void removeInventory(Location location) {
         this.inventories.remove(location);
+        this.toRemove.add(location);
+    }
+
+    public boolean hasInventory(Location location) {
+        return this.inventories.containsKey(location);
     }
 
     public CustomInventory getInventory(Location location) {
         return this.inventories.get(location);
     }
 
+    public Map<Location, CustomInventory> getInventories() {
+        return inventories;
+    }
+
+    public void addRemoval(Location location) {
+        toRemove.add(location);
+    }
+
+    public void undoRemoval(Location location) {
+        toRemove.remove(location);
+    }
+
+    public boolean isRemoval(Location location) {
+        return toRemove.contains(location);
+    }
 }
