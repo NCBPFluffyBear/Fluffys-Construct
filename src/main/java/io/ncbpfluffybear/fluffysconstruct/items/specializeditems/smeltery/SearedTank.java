@@ -2,9 +2,9 @@ package io.ncbpfluffybear.fluffysconstruct.items.specializeditems.smeltery;
 
 import com.jeff_media.customblockdata.CustomBlockData;
 import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
-import io.ncbpfluffybear.fluffysconstruct.items.Placeable;
 import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.StringUtils;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
-public class SearedTank extends Placeable {
+public class SearedTank extends SearedBricks {
 
     public static final NamespacedKey LAVA_LEVEL = new NamespacedKey(FCPlugin.getInstance(), "lava_level"); // Byte exists or not
 
@@ -29,7 +29,7 @@ public class SearedTank extends Placeable {
         CustomBlockData data = new CustomBlockData(block, FCPlugin.getInstance());
         int lavaLevel = getLavaLevel(data);
         // Check for lava bucket
-        if (item.getType() == Material.LAVA_BUCKET && item.getAmount() == 1) {
+        if (item != null && item.getType() == Material.LAVA_BUCKET && item.getAmount() == 1) {
             int newLava = lavaLevel + LAVA_FUEL;
             if (newLava > LAVA_MAX) {
                 ChatUtils.sendMsg(player, "ITEMS.SEARED_TANK.MAX_LAVA_CAPACITY");
@@ -55,11 +55,23 @@ public class SearedTank extends Placeable {
         return true;
     }
 
+    public static int getLavaLevel(Location location) {
+        return new CustomBlockData(location.getBlock(), FCPlugin.getInstance())
+                .getOrDefault(LAVA_LEVEL, PersistentDataType.INTEGER, 0);
+    }
+
     private static int getLavaLevel(CustomBlockData data) {
         return data.getOrDefault(LAVA_LEVEL, PersistentDataType.INTEGER, 0);
     }
 
     private static void setLavaLevel(CustomBlockData data, int level) {
         data.set(LAVA_LEVEL, PersistentDataType.INTEGER, level);
+
+        Block tank = data.getBlock();
+        if (level > 0) {
+            tank.setType(Material.ORANGE_STAINED_GLASS);
+        } else {
+            tank.setType(Material.LIGHT_GRAY_STAINED_GLASS);
+        }
     }
 }

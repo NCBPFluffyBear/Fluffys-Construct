@@ -18,7 +18,7 @@ public class ChatUtils {
      * Sends a config message, targeted by the path location
      */
     public static void sendMsg(CommandSender sender, String path, Object... args) {
-        sender.sendMessage(StringUtils.color("&7[FluffysConstruct] " + path));
+        sender.sendMessage(StringUtils.color("&7[FluffysConstruct] " + FCPlugin.getMessages().fromPath(path, args)));
     }
 
     public static void broadcast(String... msgs) {

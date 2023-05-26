@@ -39,7 +39,9 @@ public class SearedBricks extends Placeable {
             return;
         }
 
-        new CustomBlockData(controlLoc.getBlock(), FCPlugin.getInstance()).remove(Controller.VALID_SMELTERY_FLAG);
+        CustomBlockData controllerData = new CustomBlockData(controlLoc.getBlock(), FCPlugin.getInstance());
+        controllerData.remove(Controller.VALID_SMELTERY_FLAG);
+        controllerData.remove(Controller.TANK_LOCATIONS);
     }
 
     /**

@@ -14,6 +14,8 @@ public interface InventoryBlock {
      * Perform inventory open actions in here
      * Return whether the player may open the inventory or not.
      */
-    boolean onOpen(CustomInventory customInventory, Player player, ItemStack item);
+    default boolean onOpen(CustomInventory customInventory, Player player, ItemStack item) {
+        return true;
+    }
 
 }

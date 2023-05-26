@@ -10,13 +10,17 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class InventoryUtils {
 
     public static InvClickHandler getDenyHandler() {
-        return new InvClickHandler() {
+        return new InvClickHandler.Basic() {
             @Override
-            public boolean onClick(Player player, CustomInventory customInv, int slot, ItemStack clickedItem, ClickType clickType) {
+            public boolean onClick(Player player, int slot, ItemStack clickedItem, ClickType clickType) {
                 return false;
             }
         };
@@ -64,6 +68,17 @@ public class InventoryUtils {
         } else {
             currItem.setAmount(currItem.getAmount() + input.getAmount());
         }
+    }
+
+    /**
+     * Generates a background from non-background slots
+     */
+    public static int[] invertSlots(int invSize, int[] foreground) {
+        Set<Integer> background = IntStream.range(0, invSize).boxed().collect(Collectors.toSet());
+        for (int slot : foreground) {
+            background.remove(slot);
+        }
+        return background.stream().mapToInt(i->i).toArray();
     }
 
 }

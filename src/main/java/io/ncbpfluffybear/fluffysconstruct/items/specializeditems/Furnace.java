@@ -115,11 +115,6 @@ public class Furnace extends Placeable implements Clocked, InventoryBlock {
     }
 
     @Override
-    public boolean onOpen(CustomInventory customInventory, Player player) {
-        return true;
-    }
-
-    @Override
     public void onPlace(Location location) {
         FCPlugin.getMachineProgressTracker().createProgress(location);
     }

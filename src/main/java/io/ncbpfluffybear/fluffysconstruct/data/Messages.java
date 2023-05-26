@@ -21,7 +21,7 @@ public class Messages {
         }
     }
 
-    public String getMessage(String path) {
+    public String fromPath(String path) {
         if (!config.contains(path)) {
             ChatUtils.logError("Missing message at path " + path);
             return "ERR";
@@ -30,7 +30,7 @@ public class Messages {
         return config.getString(path);
     }
 
-    public String getMessage(String path, Object... args) {
-        return StringUtils.format(getMessage(path), args);
+    public String fromPath(String path, Object... args) {
+        return StringUtils.format(fromPath(path), args);
     }
 }

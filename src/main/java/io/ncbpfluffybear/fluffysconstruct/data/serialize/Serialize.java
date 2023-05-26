@@ -7,10 +7,15 @@ import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
+import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class Serialize {
@@ -24,6 +29,40 @@ public class Serialize {
 
     public static String serializeLocation(Location loc) {
         return loc.getWorld().getUID() + ":" + loc.getBlockX() + ":" + loc.getBlockY() + ":" + loc.getBlockZ();
+    }
+
+    public static Set<Location> parseLocations(@Nullable String locationKeys) {
+        Set<Location> locations = new HashSet<>();
+        if (locationKeys == null) return locations;
+        String[] split = locationKeys.split(",");
+        for (String toParse : split) {
+            locations.add(parseLocation(toParse));
+        }
+        return locations;
+    }
+
+    public static String serializeLocations(Set<Location> locations) {
+        StringBuilder serialized = new StringBuilder();
+        int count = 0;
+        for (Location location : locations) {
+            serialized.append(serializeLocation(location));
+            if (++count != locations.size()) {
+                serialized.append(",");
+            }
+        }
+        return serialized.toString();
+    }
+
+    public static String addLocation(String locations, Location toAdd) {
+        Set<Location> locList = parseLocations(locations);
+        locList.add(toAdd);
+        return serializeLocations(locList);
+    }
+
+    public static String removeLocation(String locations, Location toRemove) {
+        Set<Location> locList = parseLocations(locations);
+        locList.remove(toRemove);
+        return serializeLocations(locList);
     }
 
     /**

@@ -1,6 +1,5 @@
 package io.ncbpfluffybear.fluffysconstruct.inventory;
 
-import io.ncbpfluffybear.fluffysconstruct.data.Tuple;
 import io.ncbpfluffybear.fluffysconstruct.data.serialize.Serialize;
 import io.ncbpfluffybear.fluffysconstruct.items.CustomItem;
 import io.ncbpfluffybear.fluffysconstruct.utils.InventoryUtils;
@@ -8,16 +7,14 @@ import io.ncbpfluffybear.fluffysconstruct.utils.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CustomInventory {
@@ -31,6 +28,7 @@ public class CustomInventory {
     private final Map<Integer, InvClickHandler> clickHandlers;
     private final Location location;
     private final int[] serializeSlots;
+    private boolean invClickable;
 
     public CustomInventory(InventoryTemplate template, Location location) {
         this.title = template.getTitle();
@@ -38,12 +36,15 @@ public class CustomInventory {
         this.items = new ItemStack[this.size];
         this.clickHandlers = new HashMap<>();
         this.setBackground(template.getBackground());
-        for (Tuple<Integer, ItemStack, InvClickHandler> itemPair : template.getItems()) {
-            items[itemPair.getFirst()] = itemPair.getSecond();
-            clickHandlers.put(itemPair.getFirst(), itemPair.getThird());
+        for (InventoryTemplate.SlotTemplate slotTemplate : template.getDefaultItems()) {
+            for (int slot : slotTemplate.getSlots()) {
+                items[slot] = slotTemplate.getItem();
+                clickHandlers.put(slot, slotTemplate.getHandler());
+            }
         }
         this.location = location;
         this.serializeSlots = template.getSerializeSlots();
+        this.invClickable = true;
     }
 
     /**
@@ -98,12 +99,28 @@ public class CustomInventory {
         clickHandlers.put(slot, handler);
     }
 
-    public boolean callClickHandler(Player player, CustomInventory customInv, int slot, ItemStack clickedItem, ClickType clickType) {
+    public boolean callClickHandler(Player player, CustomInventory customInv, InventoryClickEvent e) {
+        int slot = e.getSlot();
         if (clickHandlers.containsKey(slot)) {
-            return clickHandlers.get(slot).onClick(player, customInv, slot, clickedItem, clickType);
+            InvClickHandler handler = clickHandlers.get(slot);
+            if (handler instanceof InvClickHandler.Basic) {
+                return ((InvClickHandler.Basic) handler).onClick(player, slot, e.getCurrentItem(), e.getClick());
+            } else if (handler instanceof InvClickHandler.Event) {
+                return ((InvClickHandler.Event) handler).onClick(player, customInv, slot, e.getCurrentItem(), e);
+            } else if (handler instanceof InvClickHandler.Advanced) {
+                return ((InvClickHandler.Advanced) handler).onClick(player, customInv, slot, e.getCurrentItem(), e.getClick());
+            }
         }
 
         return true;
+    }
+
+    public void setInvClickable(boolean invClickable) {
+        this.invClickable = invClickable;
+    }
+
+    public boolean isInvClickable() {
+        return invClickable;
     }
 
     public Location getLocation() {

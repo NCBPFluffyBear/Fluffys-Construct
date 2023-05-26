@@ -5,6 +5,7 @@ import io.ncbpfluffybear.fluffysconstruct.inventory.CustomInventory;
 import io.ncbpfluffybear.fluffysconstruct.inventory.InventoryRepository;
 import io.ncbpfluffybear.fluffysconstruct.items.FCItem;
 import io.ncbpfluffybear.fluffysconstruct.items.InventoryBlock;
+import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.ItemUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -71,11 +72,12 @@ public class FCInventoryHandler implements Listener {
 
         if (this.openInventories.containsKey(player)) {
             CustomInventory customInv = this.repository.getInventory(this.openInventories.get(player));
-            if (e.getClickedInventory() != customInv.getInventory()) {
+            if (e.getClickedInventory() != customInv.getInventory() && !customInv.isInvClickable()) {
+                e.setCancelled(true); // Deny player inv clicks
                 return;
             }
 
-            cancelEvent = !customInv.callClickHandler(player, customInv, e.getSlot(), e.getCurrentItem(), e.getClick());
+            cancelEvent = !customInv.callClickHandler(player, customInv, e);
         }
 
         if (cancelEvent) {
