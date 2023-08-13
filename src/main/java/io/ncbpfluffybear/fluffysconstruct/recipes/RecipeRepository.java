@@ -1,6 +1,6 @@
 package io.ncbpfluffybear.fluffysconstruct.recipes;
 
-import io.ncbpfluffybear.fluffysconstruct.items.FCItem;
+import io.ncbpfluffybear.fluffysconstruct.api.items.FCItem;
 
 import java.util.HashMap;
 import java.util.Map;

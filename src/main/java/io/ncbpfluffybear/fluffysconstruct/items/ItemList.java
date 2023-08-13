@@ -1,5 +1,6 @@
 package io.ncbpfluffybear.fluffysconstruct.items;
 
+import io.ncbpfluffybear.fluffysconstruct.api.items.FCItem;
 import io.ncbpfluffybear.fluffysconstruct.items.specializeditems.smeltery.Controller;
 import io.ncbpfluffybear.fluffysconstruct.items.specializeditems.Furnace;
 import io.ncbpfluffybear.fluffysconstruct.items.specializeditems.smeltery.SearedBricks;

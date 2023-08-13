@@ -2,7 +2,7 @@ package io.ncbpfluffybear.fluffysconstruct.tasks;
 
 import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
 import io.ncbpfluffybear.fluffysconstruct.items.Clocked;
-import io.ncbpfluffybear.fluffysconstruct.items.FCItem;
+import io.ncbpfluffybear.fluffysconstruct.api.items.FCItem;
 import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.ItemUtils;
 import org.bukkit.Location;

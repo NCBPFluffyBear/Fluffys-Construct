@@ -1,4 +1,4 @@
-package io.ncbpfluffybear.fluffysconstruct.items;
+package io.ncbpfluffybear.fluffysconstruct.api.items;
 
 import io.ncbpfluffybear.fluffysconstruct.utils.StringUtils;
 import org.bukkit.Material;

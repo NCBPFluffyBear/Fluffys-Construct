@@ -1,27 +1,31 @@
 package io.ncbpfluffybear.fluffysconstruct;
 
-import com.jeff_media.customblockdata.CustomBlockData;
+import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.PersistenceUtils;
+import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.blockdata.BlockData;
+import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.blockdata.BlockDataRepository;
+import io.ncbpfluffybear.fluffysconstruct.api.web.WebServer;
 import io.ncbpfluffybear.fluffysconstruct.blocks.BlockRepository;
 import io.ncbpfluffybear.fluffysconstruct.commands.BaseCommand;
-import io.ncbpfluffybear.fluffysconstruct.data.ConfigManager;
-import io.ncbpfluffybear.fluffysconstruct.data.Database;
-import io.ncbpfluffybear.fluffysconstruct.data.Messages;
+import io.ncbpfluffybear.fluffysconstruct.api.data.ConfigManager;
+import io.ncbpfluffybear.fluffysconstruct.api.data.Messages;
 import io.ncbpfluffybear.fluffysconstruct.handlers.FCBlockHandler;
 import io.ncbpfluffybear.fluffysconstruct.handlers.FCEntityHandler;
 import io.ncbpfluffybear.fluffysconstruct.handlers.FCInventoryHandler;
-import io.ncbpfluffybear.fluffysconstruct.inventory.InventoryRepository;
+import io.ncbpfluffybear.fluffysconstruct.api.inventory.InventoryRepository;
 import io.ncbpfluffybear.fluffysconstruct.items.ItemRepository;
 import io.ncbpfluffybear.fluffysconstruct.recipes.RecipeRepository;
+import io.ncbpfluffybear.fluffysconstruct.repository.SmelteryRepository;
 import io.ncbpfluffybear.fluffysconstruct.setup.ItemSetup;
+import io.ncbpfluffybear.fluffysconstruct.setup.Molten;
 import io.ncbpfluffybear.fluffysconstruct.setup.RecipeSetup;
 import io.ncbpfluffybear.fluffysconstruct.tasks.BlockClock;
 import io.ncbpfluffybear.fluffysconstruct.trackers.FuelStorageTracker;
 import io.ncbpfluffybear.fluffysconstruct.trackers.MachineProgressTracker;
-import io.ncbpfluffybear.fluffysconstruct.utils.Constants;
-import io.ncbpfluffybear.fluffysconstruct.utils.DatabaseUtils;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,14 +41,25 @@ public class FCPlugin extends JavaPlugin {
     private static FuelStorageTracker fuelStorageTracker;
     private static Messages messages;
 
-    private static DatabaseUtils dbUtil;
+    private static PersistenceUtils pu;
     private static ConfigManager cfg;
+    private static Molten molten;
+    private static SmelteryRepository sr;
 
     public FCPlugin() {
+        super();
+    }
+
+    /**
+     * Used for unit testing
+     */
+    public FCPlugin(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
+        super(loader, description, dataFolder, file);
     }
 
     @Override
     public void onEnable() {
+        // ConfigurationSerialization.registerClass(BlockData.class); Serialization is not working. Investigate further?
         instance = this;
 
         itemRepository = new ItemRepository();
@@ -64,24 +79,37 @@ public class FCPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FCEntityHandler(), this);
         getServer().getScheduler().runTaskTimer(this, new BlockClock(), 20L, 20L);
 
-        CustomBlockData.registerListener(this);
-
         if (!this.getDataFolder().exists()) {
             this.getDataFolder().mkdir();
         }
 
-        dbUtil = new DatabaseUtils(new Database());
+
+        sr = new SmelteryRepository();
+        pu = new PersistenceUtils();
         cfg = new ConfigManager("config.yml");
         messages = new Messages("messages.yml");
+        molten = new Molten("molten.yml");
 
-        dbUtil.loadBlocks();
-        dbUtil.loadInvPackages();
+        pu.load();
+
+        try {
+            WebServer webServer = new WebServer();
+            webServer.start(80); // Starts webserver on new thread
+            getLogger().info("Started server: " + webServer.getServer().getAddress().toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
     public void onDisable() {
-        dbUtil.saveBlocks();
-        dbUtil.saveInventories();
+        try {
+            pu.save();
+        } catch (IOException | InvalidConfigurationException e) {
+            ChatUtils.logError("Error saving data to file.");
+            throw new RuntimeException(e);
+        }
     }
 
     public static FCPlugin getInstance() {
@@ -96,8 +124,16 @@ public class FCPlugin extends JavaPlugin {
         return recipeRepository;
     }
 
+    public static SmelteryRepository getSmelteryRepository() {
+        return sr;
+    }
+
     public static BlockRepository getBlockRepository() {
         return blockRepository;
+    }
+
+    public static PersistenceUtils getPersistenceUtils() {
+        return pu;
     }
 
     public static InventoryRepository getInventoryRepository() {
@@ -112,11 +148,11 @@ public class FCPlugin extends JavaPlugin {
         return fuelStorageTracker;
     }
 
-    public static DatabaseUtils getDbUtil() {
-        return dbUtil;
-    }
-
     public static Messages getMessages() {
         return messages;
+    }
+
+    public static Molten getMolten() {
+        return molten;
     }
 }

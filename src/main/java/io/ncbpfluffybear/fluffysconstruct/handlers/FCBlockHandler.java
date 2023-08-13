@@ -1,16 +1,13 @@
 package io.ncbpfluffybear.fluffysconstruct.handlers;
 
-import com.jeff_media.customblockdata.CustomBlockData;
-import com.jeff_media.customblockdata.events.CustomBlockDataMoveEvent;
-import com.jeff_media.customblockdata.events.CustomBlockDataRemoveEvent;
 import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
-import io.ncbpfluffybear.fluffysconstruct.inventory.CustomInventory;
+import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.DirtyType;
+import io.ncbpfluffybear.fluffysconstruct.api.inventory.CustomInventory;
+import io.ncbpfluffybear.fluffysconstruct.api.items.FCItem;
 import io.ncbpfluffybear.fluffysconstruct.items.Clocked;
-import io.ncbpfluffybear.fluffysconstruct.items.FCItem;
 import io.ncbpfluffybear.fluffysconstruct.items.InventoryBlock;
 import io.ncbpfluffybear.fluffysconstruct.items.Placeable;
 import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
-import io.ncbpfluffybear.fluffysconstruct.utils.Constants;
 import io.ncbpfluffybear.fluffysconstruct.utils.ItemUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -21,7 +18,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Iterator;
 
@@ -43,8 +39,8 @@ public class FCBlockHandler implements Listener {
             return;
         }
 
-        CustomBlockData blockData = new CustomBlockData(e.getBlock(), FCPlugin.getInstance());
-        blockData.set(Constants.FC_BLOCK_KEY, PersistentDataType.INTEGER, item.getId());
+        FCPlugin.getBlockRepository().addFCItemAt(e.getBlock().getLocation(), item);
+        FCPlugin.getPersistenceUtils().markDirty(e.getBlock().getLocation(), DirtyType.WORLD);
 
         Location location = e.getBlockPlaced().getLocation();
 
@@ -58,6 +54,7 @@ public class FCBlockHandler implements Listener {
             if (inventory != null) {
                 FCPlugin.getInventoryRepository().putInventory(location, inventory); // Create an empty inventory for this block
             }
+            FCPlugin.getPersistenceUtils().markDirty(e.getBlock().getLocation(), DirtyType.INVENTORY);
         }
 
         ((Placeable) item).onPlace(location);
@@ -92,8 +89,11 @@ public class FCBlockHandler implements Listener {
     }
 
     @EventHandler
-    private void onCustomBlockRemove(CustomBlockDataRemoveEvent e) {
-        ChatUtils.broadcast("REMOVE " + e.getCustomBlockData().get(Constants.FC_BLOCK_KEY, PersistentDataType.INTEGER));
+    private void onCustomBlockRemove(BlockBreakEvent e) {
+        FCItem fcItem = FCPlugin.getBlockRepository().getFCItemAt(e.getBlock().getLocation());
+        if (fcItem == null) return;
+
+        ChatUtils.broadcast("REMOVE " + fcItem.getKey());
 
         Location location = e.getBlock().getLocation();
 
@@ -115,12 +115,7 @@ public class FCBlockHandler implements Listener {
         ((Placeable) item).onBreak(location); // All placed blocks MUST be placeable
 
         location.getWorld().dropItem(location, item.getItemStack());
-    }
-
-    @EventHandler
-    private void onCustomBlockMove(CustomBlockDataMoveEvent e) {
-        e.setCancelled(true); // TODO This does not actually prevent block movements!
-        ChatUtils.broadcast(e.getBukkitEvent().getEventName(), "MOVE " + e.getCustomBlockData().get(Constants.FC_BLOCK_KEY, PersistentDataType.INTEGER));
+        FCPlugin.getPersistenceUtils().markDirty(e.getBlock().getLocation(), DirtyType.WORLD);
     }
 
     @EventHandler

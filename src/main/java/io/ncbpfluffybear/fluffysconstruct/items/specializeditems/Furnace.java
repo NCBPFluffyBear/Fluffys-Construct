@@ -1,12 +1,12 @@
 package io.ncbpfluffybear.fluffysconstruct.items.specializeditems;
 
 import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
-import io.ncbpfluffybear.fluffysconstruct.inventory.CustomInventory;
-import io.ncbpfluffybear.fluffysconstruct.inventory.InventoryTemplate;
-import io.ncbpfluffybear.fluffysconstruct.inventory.MachineInventory;
+import io.ncbpfluffybear.fluffysconstruct.api.inventory.CustomInventory;
+import io.ncbpfluffybear.fluffysconstruct.setup.InventoryTemplate;
+import io.ncbpfluffybear.fluffysconstruct.api.inventory.MachineInventory;
 import io.ncbpfluffybear.fluffysconstruct.items.Clocked;
-import io.ncbpfluffybear.fluffysconstruct.items.CustomItem;
-import io.ncbpfluffybear.fluffysconstruct.items.FCItem;
+import io.ncbpfluffybear.fluffysconstruct.api.items.CustomItem;
+import io.ncbpfluffybear.fluffysconstruct.api.items.FCItem;
 import io.ncbpfluffybear.fluffysconstruct.items.InventoryBlock;
 import io.ncbpfluffybear.fluffysconstruct.items.ItemList;
 import io.ncbpfluffybear.fluffysconstruct.items.Placeable;
@@ -15,7 +15,6 @@ import io.ncbpfluffybear.fluffysconstruct.utils.ItemUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.MachineUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
@@ -35,7 +34,7 @@ public class Furnace extends Placeable implements Clocked, InventoryBlock {
 
     private static final Map<FCItem, FCItem> recipes = Map.of(
             ItemList.GROUT, ItemList.SEARED_BRICKS
-    );
+    ); // TODO: Replace recipes with RecipeRepository
 
 
     public Furnace(String key, int id, Material material, String name, String... lore) {

@@ -1,0 +1,64 @@
+/* Global Theme */
+html,
+body {
+    background-color: #ffbebe;
+    box-sizing: border-box;
+    font-family: "Minecraft", sans-serif;
+}
+
+.inv {
+    /* Inventory Look */
+    background: #c6c6c6;
+    border-radius: 3px;
+    box-shadow: 5px 5px 0 #555555, inset 4px 4px 0 #fefefe;
+    margin-bottom: 100px;
+    /* Inner padding */
+    box-sizing: border-box;
+    padding: 10px;
+
+    width: fit-content;
+}
+
+.slot {
+    /* Slot Look */
+    min-width: 50px;
+    width: fit-content;
+    height: 50px;
+    justify-content: center;
+    background: #8b8b8b;
+    box-shadow: inset 1.5px 1.5px 0 rgba(55, 55, 55, 0.8),
+    inset -2px -2px 0 #ffffff;
+    /* Inner padding */
+    box-sizing: border-box;
+    padding: 2px;
+}
+
+.texture {
+    image-rendering: pixelated; /* Upscale images properly */
+    min-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.bar-container {
+    width: 150px;
+    height: 100%;
+    display: flex;
+}
+
+.bar {
+    background-image: url("textures/items/lava_still.png");
+    object-fit: cover;
+}
+
+.molten {
+    width: 150px;
+    object-fit: cover;
+    display: flex;
+}
+
+ul {
+    list-style: none;
+}
+
+

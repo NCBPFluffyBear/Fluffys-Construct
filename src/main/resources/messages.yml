@@ -1,10 +1,15 @@
 COMMANDS:
   GIVE:
-    NO_ITEM: "&cThere is no item with the key %s!"
+    NO_ITEM: "&cThere is no item with the id %s!"
+  INSPECT:
+    INVALID_BLOCK: "&cThis block is not a FC Block!"
+    CUSTOM_DATA: "%s (%s): %s"
+    NO_DATA: "&cNo data here"
+    NOT_SMELTERY: "&cThis block is not part of a smeltery!"
 ITEMS:
   CONTROLLER:
     MISSING_BRICKS: "&cSeared bricks missing at %s"
     SUCCESSFUL_CREATION: "&aSuccessfully created a smeltery of depth %d"
   SEARED_TANK:
     MAX_LAVA_CAPACITY: "&cThis Seared Tank is at max capacity"
-    LAVA_STORED: "&eThis Seared Tank has %d buckets of lava"
+    LAVA_STORED: "&eThis Seared Tank has %d/%d buckets of lava"

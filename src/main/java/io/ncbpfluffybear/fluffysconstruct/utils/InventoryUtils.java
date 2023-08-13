@@ -1,7 +1,7 @@
 package io.ncbpfluffybear.fluffysconstruct.utils;
 
-import io.ncbpfluffybear.fluffysconstruct.inventory.CustomInventory;
-import io.ncbpfluffybear.fluffysconstruct.inventory.InvClickHandler;
+import io.ncbpfluffybear.fluffysconstruct.api.inventory.CustomInventory;
+import io.ncbpfluffybear.fluffysconstruct.api.inventory.InvClickHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -10,7 +10,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;

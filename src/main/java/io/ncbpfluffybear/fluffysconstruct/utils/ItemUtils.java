@@ -1,10 +1,9 @@
 package io.ncbpfluffybear.fluffysconstruct.utils;
 
-import com.jeff_media.customblockdata.CustomBlockData;
 import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
-import io.ncbpfluffybear.fluffysconstruct.items.FCItem;
+import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.blockdata.BlockData;
+import io.ncbpfluffybear.fluffysconstruct.api.items.FCItem;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -70,16 +69,10 @@ public class ItemUtils {
     }
 
     @Nullable
-    public static FCItem getFCItem(Block b) {
-        if (!CustomBlockData.hasCustomBlockData(b, FCPlugin.getInstance())) {return null;}
+    public static FCItem getFCItem(@Nullable Block b) {
+        if (b == null) return null;
 
-        Integer id = new CustomBlockData(b, FCPlugin.getInstance()).get(Constants.FC_BLOCK_KEY, PersistentDataType.INTEGER);
-        if (id == null) {
-            Bukkit.getLogger().severe("A block was broken at " + b.getLocation() + " but no ID was associated with the block.");
-            return null;
-        }
-
-        return getFCItem(id);
+        return FCPlugin.getBlockRepository().getFCItemAt(b.getLocation());
     }
 
     /**

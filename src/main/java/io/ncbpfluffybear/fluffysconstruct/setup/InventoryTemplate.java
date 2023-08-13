@@ -1,6 +1,8 @@
-package io.ncbpfluffybear.fluffysconstruct.inventory;
+package io.ncbpfluffybear.fluffysconstruct.setup;
 
-import io.ncbpfluffybear.fluffysconstruct.items.CustomItem;
+import io.ncbpfluffybear.fluffysconstruct.api.inventory.CustomInventory;
+import io.ncbpfluffybear.fluffysconstruct.api.inventory.InvClickHandler;
+import io.ncbpfluffybear.fluffysconstruct.api.items.CustomItem;
 import io.ncbpfluffybear.fluffysconstruct.items.specializeditems.Furnace;
 import io.ncbpfluffybear.fluffysconstruct.items.specializeditems.smeltery.Controller;
 import io.ncbpfluffybear.fluffysconstruct.utils.InventoryUtils;
@@ -36,7 +38,28 @@ public enum InventoryTemplate {
     CONTROLLER("&6&lController", 6,
             new int[0], new SlotTemplate[]{
             new SlotTemplate(Controller.SELECTION_SLOTS, new CustomItem(Controller.NO_SELECTION_MATERIAL, " ")),
-            new SlotTemplate(10, new CustomItem(Material.BOOK, "&6Instructions")),
+            new SlotTemplate(10, new CustomItem(Material.BOOK, "&6Instructions"), new InvClickHandler.Advanced() {
+                @Override
+                public boolean onClick(Player player, CustomInventory customInv, int slot, ItemStack clickedItem, ClickType clickType) {
+//                    if (data.has(WebUtils.UUID_URL)) {
+//                        String uuidUrl = data.get(WebUtils.UUID_URL, PersistentDataType.STRING);
+//                        if (uuidUrl != null) {
+//                            UUID uuid = UUID.fromString(uuidUrl);
+//                            if (WebUtils.hasSmelteryPage(uuid)) {
+//                                ChatUtils.warn("http://127.0.0.1/smeltery/" + uuidUrl);
+//                                ChatUtils.send(player, "http://127.0.0.1/smeltery/" + uuidUrl);
+//                                return false;
+//                            }
+//                        }
+//                    }
+//
+//                    UUID uuid = WebUtils.addSmelteryPage(data);
+//                    data.set(WebUtils.UUID_URL, PersistentDataType.STRING, uuid.toString());
+//                    ChatUtils.warn("http://127.0.0.1/smeltery/" + uuid);
+//                    ChatUtils.send(player, "http://127.0.0.1/smeltery/" + uuid);
+                    return false;
+                }
+            }),
             new SlotTemplate(Controller.RESCAN_SLOT, new CustomItem(Material.ORANGE_STAINED_GLASS_PANE, "&e&lRescan Smeltery"), new InvClickHandler.Advanced() {
                 @Override
                 public boolean onClick(Player player, CustomInventory customInv, int slot, ItemStack clickedItem, ClickType clickType) {
@@ -47,7 +70,7 @@ public enum InventoryTemplate {
             new SlotTemplate(Controller.TOTAL_FUEL_SLOT, new CustomItem(Material.GLASS_PANE, "No Lava Found")),
             new SlotTemplate(Controller.MOLTEN_METALS_SLOT, new CustomItem(Material.GREEN_STAINED_GLASS_PANE, "No Molten Metals"))
     },
-            new int[]{Controller.RESCAN_SLOT}
+            new int[0]
     );
 
     private final String title;
@@ -91,7 +114,7 @@ public enum InventoryTemplate {
         return serializeSlots;
     }
 
-    static class SlotTemplate {
+    public static class SlotTemplate {
         private final int[] slots;
         private final ItemStack item;
         private final InvClickHandler handler;

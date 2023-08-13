@@ -1,14 +1,15 @@
-package io.ncbpfluffybear.fluffysconstruct.inventory;
+package io.ncbpfluffybear.fluffysconstruct.api.inventory;
 
-import io.ncbpfluffybear.fluffysconstruct.data.serialize.Serialize;
-import io.ncbpfluffybear.fluffysconstruct.items.CustomItem;
+import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
+import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.DirtyType;
+import io.ncbpfluffybear.fluffysconstruct.api.items.CustomItem;
+import io.ncbpfluffybear.fluffysconstruct.setup.InventoryTemplate;
 import io.ncbpfluffybear.fluffysconstruct.utils.InventoryUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -31,6 +32,7 @@ public class CustomInventory {
     private boolean invClickable;
 
     public CustomInventory(InventoryTemplate template, Location location) {
+        this.location = location;
         this.title = template.getTitle();
         this.size = template.getSize();
         this.items = new ItemStack[this.size];
@@ -42,7 +44,6 @@ public class CustomInventory {
                 clickHandlers.put(slot, slotTemplate.getHandler());
             }
         }
-        this.location = location;
         this.serializeSlots = template.getSerializeSlots();
         this.invClickable = true;
     }
@@ -51,6 +52,7 @@ public class CustomInventory {
      * To be used after the inventory is already built.
      */
     public void setItem(int slot, ItemStack item) {
+        FCPlugin.getPersistenceUtils().markDirty(this.location, DirtyType.INVENTORY);
         if (this.inv == null) {
             build();
         }
@@ -59,6 +61,7 @@ public class CustomInventory {
     }
 
     private void setBackground(int[] slots) {
+        FCPlugin.getPersistenceUtils().markDirty(this.location, DirtyType.INVENTORY);
         for (int slot : slots) {
             items[slot] = background;
             addClickHandler(slot, InventoryUtils.getDenyHandler());
@@ -100,6 +103,7 @@ public class CustomInventory {
     }
 
     public boolean callClickHandler(Player player, CustomInventory customInv, InventoryClickEvent e) {
+        FCPlugin.getPersistenceUtils().markDirty(this.location, DirtyType.INVENTORY);
         int slot = e.getSlot();
         if (clickHandlers.containsKey(slot)) {
             InvClickHandler handler = clickHandlers.get(slot);
@@ -130,15 +134,20 @@ public class CustomInventory {
     /**
      * Packages items in all serializeSlots
      */
-    public String serialize() {
+    public Map<Integer, ItemStack> getToSerialize() {
         if (serializeSlots == null) {
             return null;
         }
 
         Map<Integer, ItemStack> toSerialize = new HashMap<>();
         for (int slot : serializeSlots) {
-            toSerialize.put(slot, getItemInSlot(slot));
+            ItemStack item = getItemInSlot(slot);
+            if (item == null || item.getType() == Material.AIR) {
+                continue;
+            }
+
+            toSerialize.put(slot, item);
         }
-        return Serialize.serializeItems(toSerialize);
+        return toSerialize;
     }
 }

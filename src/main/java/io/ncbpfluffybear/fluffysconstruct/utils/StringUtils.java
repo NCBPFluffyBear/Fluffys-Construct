@@ -43,4 +43,8 @@ public class StringUtils {
 
         return String.format(format, newArgs);
     }
+
+    public static String[] format(String[] format, Object... args) {
+        return format(String.join("\n", format), args).split("\n");
+    }
 }

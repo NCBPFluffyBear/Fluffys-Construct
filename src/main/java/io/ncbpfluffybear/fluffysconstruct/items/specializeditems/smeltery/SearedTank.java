@@ -1,9 +1,10 @@
 package io.ncbpfluffybear.fluffysconstruct.items.specializeditems.smeltery;
 
-import com.jeff_media.customblockdata.CustomBlockData;
 import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
+import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.blockdata.BlockData;
+import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.blockdata.BlockDataRepository;
 import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
-import io.ncbpfluffybear.fluffysconstruct.utils.StringUtils;
+import io.ncbpfluffybear.fluffysconstruct.utils.Constants;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -13,12 +14,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
+import javax.annotation.Nonnull;
+
 public class SearedTank extends SearedBricks {
 
     public static final NamespacedKey LAVA_LEVEL = new NamespacedKey(FCPlugin.getInstance(), "lava_level"); // Byte exists or not
 
-    private static final int LAVA_FUEL = 50;
-    private static final int LAVA_MAX = 250;
+    private static final int CAPACITY_MB = 4000;
 
     public SearedTank(String key, int id, Material material, String name, String... lore) {
         super(key, id, material, name, lore);
@@ -26,48 +28,50 @@ public class SearedTank extends SearedBricks {
 
     @Override
     public void onInteract(Block block, Player player, ItemStack item) {
-        CustomBlockData data = new CustomBlockData(block, FCPlugin.getInstance());
-        int lavaLevel = getLavaLevel(data);
+        BlockData blockData = BlockDataRepository.getOrCreateDataAt(block);
+        int lavaLevel = getLavaLevel(blockData);
         // Check for lava bucket
         if (item != null && item.getType() == Material.LAVA_BUCKET && item.getAmount() == 1) {
-            int newLava = lavaLevel + LAVA_FUEL;
-            if (newLava > LAVA_MAX) {
+            int newLava = lavaLevel + Constants.BUCKET_MB;
+            if (newLava > CAPACITY_MB) {
                 ChatUtils.sendMsg(player, "ITEMS.SEARED_TANK.MAX_LAVA_CAPACITY");
                 return;
             }
 
             item.setType(Material.BUCKET);
             player.playSound(block.getLocation(), Sound.ITEM_BUCKET_EMPTY_LAVA, 1f, 1f);
-            setLavaLevel(data, newLava);
+            setLavaLevel(blockData, newLava);
         } else {
-            ChatUtils.sendMsg(player, "ITEMS.SEARED_TANK.LAVA_STORED", StringUtils.formatDecimal((double) lavaLevel / LAVA_FUEL));
+            ChatUtils.sendMsg(player, "ITEMS.SEARED_TANK.LAVA_STORED", lavaLevel, CAPACITY_MB);
         }
     }
 
-    public static boolean consumeLava(Block block, int required) {
-        CustomBlockData data = new CustomBlockData(block, FCPlugin.getInstance());
-        int lavaLevel = getLavaLevel(data);
+    public static boolean consumeLava(BlockData blockData, int required) {
+        int lavaLevel = getLavaLevel(blockData);
         if (lavaLevel < required) {
             return false;
         }
 
-        setLavaLevel(data, lavaLevel - required);
+        setLavaLevel(blockData, lavaLevel - required);
         return true;
     }
 
+    private static int getLavaLevel(@Nonnull BlockData blockData) {
+        return blockData.getOrDefault(LAVA_LEVEL, PersistentDataType.INTEGER, 0);
+    }
+
     public static int getLavaLevel(Location location) {
-        return new CustomBlockData(location.getBlock(), FCPlugin.getInstance())
-                .getOrDefault(LAVA_LEVEL, PersistentDataType.INTEGER, 0);
+        int defaultValue = 0;
+        if (BlockDataRepository.hasData(location)) {
+            return BlockDataRepository.getDataAt(location).getOrDefault(LAVA_LEVEL, PersistentDataType.INTEGER, defaultValue);
+        }
+        return defaultValue;
     }
 
-    private static int getLavaLevel(CustomBlockData data) {
-        return data.getOrDefault(LAVA_LEVEL, PersistentDataType.INTEGER, 0);
-    }
+    private static void setLavaLevel(BlockData blockData, int level) {
+        blockData.set(LAVA_LEVEL, PersistentDataType.INTEGER, level);
 
-    private static void setLavaLevel(CustomBlockData data, int level) {
-        data.set(LAVA_LEVEL, PersistentDataType.INTEGER, level);
-
-        Block tank = data.getBlock();
+        Block tank = blockData.getLocation().getBlock();
         if (level > 0) {
             tank.setType(Material.ORANGE_STAINED_GLASS);
         } else {

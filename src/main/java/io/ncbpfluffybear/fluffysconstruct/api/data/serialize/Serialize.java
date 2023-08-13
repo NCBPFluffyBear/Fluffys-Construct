@@ -1,4 +1,4 @@
-package io.ncbpfluffybear.fluffysconstruct.data.serialize;
+package io.ncbpfluffybear.fluffysconstruct.api.data.serialize;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -21,14 +21,14 @@ import java.util.UUID;
 public class Serialize {
 
     public static Location parseLocation(String locationKey) {
-        String[] splitLocation = locationKey.split(":");
+        String[] splitLocation = locationKey.split("_");
         return new Location(Bukkit.getWorld(UUID.fromString(splitLocation[0])),
                 Integer.parseInt(splitLocation[1]), Integer.parseInt(splitLocation[2]), Integer.parseInt(splitLocation[3])
         ); // World:X:Y:Z
     }
 
     public static String serializeLocation(Location loc) {
-        return loc.getWorld().getUID() + ":" + loc.getBlockX() + ":" + loc.getBlockY() + ":" + loc.getBlockZ();
+        return loc.getWorld().getUID() + "_" + loc.getBlockX() + "_" + loc.getBlockY() + "_" + loc.getBlockZ();
     }
 
     public static Set<Location> parseLocations(@Nullable String locationKeys) {

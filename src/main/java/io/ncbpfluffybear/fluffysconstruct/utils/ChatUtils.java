@@ -30,5 +30,11 @@ public class ChatUtils {
     public static void logError(String error) {
         FCPlugin.getInstance().getLogger().severe(error);
     }
+    public static void warn(String warning) {
+        FCPlugin.getInstance().getLogger().warning(warning);
+    }
+    public static void info(String info) {
+        FCPlugin.getInstance().getLogger().info(info);
+    }
 
 }

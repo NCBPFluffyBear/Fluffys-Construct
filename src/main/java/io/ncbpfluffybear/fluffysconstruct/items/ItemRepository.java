@@ -1,11 +1,10 @@
 package io.ncbpfluffybear.fluffysconstruct.items;
 
+import io.ncbpfluffybear.fluffysconstruct.api.items.FCItem;
 import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ItemRepository {

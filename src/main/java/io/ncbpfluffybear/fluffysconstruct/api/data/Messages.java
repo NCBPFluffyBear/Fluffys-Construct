@@ -1,4 +1,4 @@
-package io.ncbpfluffybear.fluffysconstruct.data;
+package io.ncbpfluffybear.fluffysconstruct.api.data;
 
 import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.StringUtils;

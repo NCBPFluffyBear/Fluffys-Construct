@@ -1,7 +1,6 @@
-package io.ncbpfluffybear.fluffysconstruct.inventory;
+package io.ncbpfluffybear.fluffysconstruct.api.inventory;
 
 import org.bukkit.Location;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.HashSet;

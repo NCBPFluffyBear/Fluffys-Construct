@@ -1,4 +1,4 @@
-package io.ncbpfluffybear.fluffysconstruct.inventory;
+package io.ncbpfluffybear.fluffysconstruct.api.inventory;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;

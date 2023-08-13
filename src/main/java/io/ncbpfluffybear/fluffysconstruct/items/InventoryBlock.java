@@ -1,6 +1,6 @@
 package io.ncbpfluffybear.fluffysconstruct.items;
 
-import io.ncbpfluffybear.fluffysconstruct.inventory.CustomInventory;
+import io.ncbpfluffybear.fluffysconstruct.api.inventory.CustomInventory;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

@@ -1,5 +1,6 @@
-package io.ncbpfluffybear.fluffysconstruct.inventory;
+package io.ncbpfluffybear.fluffysconstruct.api.inventory;
 
+import io.ncbpfluffybear.fluffysconstruct.setup.InventoryTemplate;
 import io.ncbpfluffybear.fluffysconstruct.utils.InventoryUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.ItemUtils;
 import org.bukkit.Location;

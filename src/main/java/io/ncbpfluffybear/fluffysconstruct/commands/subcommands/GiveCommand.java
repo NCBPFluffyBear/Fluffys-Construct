@@ -2,7 +2,7 @@ package io.ncbpfluffybear.fluffysconstruct.commands.subcommands;
 
 import io.ncbpfluffybear.fluffysconstruct.commands.ExecutorType;
 import io.ncbpfluffybear.fluffysconstruct.commands.SubCommand;
-import io.ncbpfluffybear.fluffysconstruct.items.FCItem;
+import io.ncbpfluffybear.fluffysconstruct.api.items.FCItem;
 import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.ItemUtils;
 import org.bukkit.command.CommandSender;

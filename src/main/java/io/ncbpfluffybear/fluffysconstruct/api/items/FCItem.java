@@ -1,4 +1,4 @@
-package io.ncbpfluffybear.fluffysconstruct.items;
+package io.ncbpfluffybear.fluffysconstruct.api.items;
 
 import io.ncbpfluffybear.fluffysconstruct.utils.Constants;
 import org.bukkit.Material;
@@ -16,13 +16,13 @@ public class FCItem {
     private final String key;
     private final int id;
 
-//    public FCItem(String key, ItemStack item) {
+//    public FCItem(String id, ItemStack item) {
 //        this.item = new CustomItem(item);
-//        this.key = key;
+//        this.id = id;
 //    }
 
     /**
-     * All FCItems have a string key (identifier) and a numerical ID for persistent storage
+     * All FCItems have a string id (identifier) and a numerical ID for persistent storage
      */
     public FCItem(String key, int id, Material material, String name, String... lore) {
         this.key = key;

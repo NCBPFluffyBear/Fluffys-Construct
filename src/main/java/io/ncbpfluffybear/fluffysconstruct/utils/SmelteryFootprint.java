@@ -1,6 +1,6 @@
 package io.ncbpfluffybear.fluffysconstruct.utils;
 
-import io.ncbpfluffybear.fluffysconstruct.data.Offset;
+import io.ncbpfluffybear.fluffysconstruct.api.data.Offset;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +13,7 @@ import java.util.List;
 public enum SmelteryFootprint {
 
     THREE_BY_THREE(
+            9,
             new ArrayList<>(Arrays.asList(
                     new Offset(1, 0, -1), new Offset(1, -1, -1), new Offset(1, -2, -1),
                     new Offset(2, 0, -1), new Offset(2, -1, -1), new Offset(2, -2, -1),
@@ -27,12 +28,18 @@ public enum SmelteryFootprint {
             ))
     );
 
+    private final int baseVolume;
     private final List<Offset> base;
     private final List<Offset> wall;
 
-    SmelteryFootprint(List<Offset> base, List<Offset> wall) {
+    SmelteryFootprint(int baseVolume, List<Offset> base, List<Offset> wall) {
+        this.baseVolume = baseVolume;
         this.base = base;
         this.wall = wall;
+    }
+
+    public int getBaseVolume() {
+        return baseVolume;
     }
 
     public List<Offset> getBase() {

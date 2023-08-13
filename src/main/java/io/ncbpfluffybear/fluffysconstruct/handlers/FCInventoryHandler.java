@@ -1,11 +1,11 @@
 package io.ncbpfluffybear.fluffysconstruct.handlers;
 
 import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
-import io.ncbpfluffybear.fluffysconstruct.inventory.CustomInventory;
-import io.ncbpfluffybear.fluffysconstruct.inventory.InventoryRepository;
-import io.ncbpfluffybear.fluffysconstruct.items.FCItem;
+import io.ncbpfluffybear.fluffysconstruct.api.inventory.CustomInventory;
+import io.ncbpfluffybear.fluffysconstruct.api.inventory.InvClickHandler;
+import io.ncbpfluffybear.fluffysconstruct.api.inventory.InventoryRepository;
+import io.ncbpfluffybear.fluffysconstruct.api.items.FCItem;
 import io.ncbpfluffybear.fluffysconstruct.items.InventoryBlock;
-import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.ItemUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -59,7 +59,7 @@ public class FCInventoryHandler implements Listener {
     }
 
     /**
-     * If the {@link io.ncbpfluffybear.fluffysconstruct.inventory.InvClickHandler returns true, allow item to be removed from slot.}
+     * If the {@link InvClickHandler returns true, allow item to be removed from slot.}
      */
     @EventHandler
     private void onClick(InventoryClickEvent e) {
@@ -77,7 +77,7 @@ public class FCInventoryHandler implements Listener {
                 return;
             }
 
-            cancelEvent = !customInv.callClickHandler(player, customInv, e);
+            cancelEvent = !customInv.callClickHandler(player, customInv, e); //TODO BLock event if an error occurs
         }
 
         if (cancelEvent) {

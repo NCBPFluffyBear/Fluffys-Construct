@@ -1,10 +1,10 @@
-package io.ncbpfluffybear.fluffysconstruct.data;
+package io.ncbpfluffybear.fluffysconstruct.api.data;
 
 import java.util.HashMap;
 
 /**
  * Allows access of value V with either K or L.
- * Each entry of K and L also stores the alternate key in
+ * Each entry of K and L also stores the alternate id in
  * a Pair, with V as the second value.
  */
 public class DoubleKeyedMap<K, L, V> {

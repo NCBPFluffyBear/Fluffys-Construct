@@ -12,4 +12,6 @@ public class Constants {
     public static final NamespacedKey FC_ITEM_KEY = new NamespacedKey(FCPlugin.getInstance(), "fluffysconstruct_item");
     public static final NamespacedKey FC_BLOCK_KEY = new NamespacedKey(FCPlugin.getInstance(), "fluffysconstruct_block");
     public static final NamespacedKey FC_ENTITY_KEY = new NamespacedKey(FCPlugin.getInstance(), "fluffysconstruct_entity");
+
+    public static final int BUCKET_MB = 1000;
 }

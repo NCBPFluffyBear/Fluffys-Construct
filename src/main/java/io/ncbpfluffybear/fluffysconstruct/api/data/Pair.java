@@ -1,4 +1,4 @@
-package io.ncbpfluffybear.fluffysconstruct.data;
+package io.ncbpfluffybear.fluffysconstruct.api.data;
 
 public class Pair<K, V> {
 

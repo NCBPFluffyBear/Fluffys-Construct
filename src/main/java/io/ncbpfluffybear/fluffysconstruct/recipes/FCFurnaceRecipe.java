@@ -1,10 +1,10 @@
 package io.ncbpfluffybear.fluffysconstruct.recipes;
 
-import io.ncbpfluffybear.fluffysconstruct.items.FCItem;
+import io.ncbpfluffybear.fluffysconstruct.api.items.FCItem;
 
 /**
  * A wrapper for Bukkit {@link org.bukkit.inventory.Recipe}s that can accept
- * {@link io.ncbpfluffybear.fluffysconstruct.items.FCItem}s
+ * {@link FCItem}s
  */
 public class FCFurnaceRecipe {
 
