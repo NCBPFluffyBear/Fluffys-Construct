@@ -52,7 +52,7 @@ public class CustomInventory {
      * To be used after the inventory is already built.
      */
     public void setItem(int slot, ItemStack item) {
-        FCPlugin.getPersistenceUtils().markDirty(this.location, DirtyType.INVENTORY);
+        FCPlugin.getPersistenceUtils().markBlockDirty(this.location, DirtyType.INVENTORY);
         if (this.inv == null) {
             build();
         }
@@ -61,7 +61,7 @@ public class CustomInventory {
     }
 
     private void setBackground(int[] slots) {
-        FCPlugin.getPersistenceUtils().markDirty(this.location, DirtyType.INVENTORY);
+        FCPlugin.getPersistenceUtils().markBlockDirty(this.location, DirtyType.INVENTORY);
         for (int slot : slots) {
             items[slot] = background;
             addClickHandler(slot, InventoryUtils.getDenyHandler());
@@ -103,7 +103,7 @@ public class CustomInventory {
     }
 
     public boolean callClickHandler(Player player, CustomInventory customInv, InventoryClickEvent e) {
-        FCPlugin.getPersistenceUtils().markDirty(this.location, DirtyType.INVENTORY);
+        FCPlugin.getPersistenceUtils().markBlockDirty(this.location, DirtyType.INVENTORY);
         int slot = e.getSlot();
         if (clickHandlers.containsKey(slot)) {
             InvClickHandler handler = clickHandlers.get(slot);

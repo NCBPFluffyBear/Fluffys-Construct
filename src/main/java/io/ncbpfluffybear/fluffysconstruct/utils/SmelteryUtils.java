@@ -1,6 +1,7 @@
 package io.ncbpfluffybear.fluffysconstruct.utils;
 
 import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
+import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.blockdata.BlockData;
 import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.blockdata.BlockDataRepository;
 import io.ncbpfluffybear.fluffysconstruct.data.SmelterySystem;
 import org.bukkit.Location;
@@ -29,9 +30,14 @@ public class SmelteryUtils {
      * Requires that the location is a valid {@link io.ncbpfluffybear.fluffysconstruct.items.specializeditems.smeltery.Controller}
      */
     public static SmelterySystem getSystem(Location location) {
-
-        String uuid = BlockDataRepository.getDataAt(location).get(Keys.SYSTEM_UUID, PersistentDataType.STRING);
-        return FCPlugin.getSmelteryRepository().getSystem(uuid);
+        if (!BlockDataRepository.hasData(location)) {
+            return null;
+        }
+        BlockData data = BlockDataRepository.getDataAt(location);
+        if (!data.has(Keys.SYSTEM_UUID, PersistentDataType.STRING)) {
+            return null;
+        }
+        return FCPlugin.getSmelteryRepository().getSystem(data.get(Keys.SYSTEM_UUID, PersistentDataType.STRING));
     }
 
     public static SmelterySystem getSystem(String uuid) {

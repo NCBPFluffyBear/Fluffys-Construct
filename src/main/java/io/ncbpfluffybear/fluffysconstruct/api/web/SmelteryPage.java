@@ -1,6 +1,6 @@
 package io.ncbpfluffybear.fluffysconstruct.api.web;
 
-import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.blockdata.BlockData;
+import io.ncbpfluffybear.fluffysconstruct.data.SmelterySystem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,12 +12,10 @@ public class SmelteryPage {
     private final Map<String, Object> placeholders;
     private final WebResource source;
 
-    public SmelteryPage(BlockData data) {
+    public SmelteryPage(SmelterySystem system) {
         this.placeholders = new HashMap<>();
-
-//        placeholders.put("%MELTED%", );
-        placeholders.put("%LOCATION%", data.getLocation());
-
+        placeholders.put("%LOCATION%", system.getController());
+        placeholders.put("%FUEL%", system.getFuel());
         this.source = WebUtils.getResource("smelteryview.html");
     }
 

@@ -2,11 +2,9 @@ package io.ncbpfluffybear.fluffysconstruct.api.data.persistent.blockdata;
 
 import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
 import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.DirtyType;
-import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -25,7 +23,7 @@ public class BlockData implements PersistentDataContainer {
     public BlockData(Location location) {
         this.contents = new HashMap<>();
         this.location = location;
-        FCPlugin.getPersistenceUtils().markDirty(this.location, DirtyType.BLOCKDATA);
+        FCPlugin.getPersistenceUtils().markBlockDirty(this.location, DirtyType.BLOCKDATA);
     }
 
 
@@ -33,13 +31,13 @@ public class BlockData implements PersistentDataContainer {
      * For some reason, the constructor deserialization doesn't work. I will cry.
      */
     public BlockData(Map<String, Object> serialized) {
-        contents = Map.copyOf(serialized);
+        contents = new HashMap<>(serialized);
     }
 
     @Override
     public <T, Z> void set(@Nonnull NamespacedKey key, @Nonnull PersistentDataType<T, Z> type, @Nonnull Z value) {
         contents.put(key.getKey(), value);
-        FCPlugin.getPersistenceUtils().markDirty(this.location, DirtyType.BLOCKDATA);
+        FCPlugin.getPersistenceUtils().markBlockDirty(this.location, DirtyType.BLOCKDATA);
     }
 
     @Override
@@ -63,7 +61,7 @@ public class BlockData implements PersistentDataContainer {
     @Override
     public void remove(@Nonnull NamespacedKey key) {
         contents.remove(key.getKey());
-        FCPlugin.getPersistenceUtils().markDirty(this.location, DirtyType.BLOCKDATA);
+        FCPlugin.getPersistenceUtils().markBlockDirty(this.location, DirtyType.BLOCKDATA);
     }
 
     @Override
@@ -95,6 +93,9 @@ public class BlockData implements PersistentDataContainer {
         return location;
     }
 
+    /**
+     * Not using {@link org.bukkit.configuration.serialization.ConfigurationSerializable} in case package location changes
+     */
     @Nonnull
     public Map<String, Object> serialize() {
         return contents;

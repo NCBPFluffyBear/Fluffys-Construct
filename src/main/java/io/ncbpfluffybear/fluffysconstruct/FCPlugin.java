@@ -59,7 +59,6 @@ public class FCPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // ConfigurationSerialization.registerClass(BlockData.class); Serialization is not working. Investigate further?
         instance = this;
 
         itemRepository = new ItemRepository();

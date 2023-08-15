@@ -5,6 +5,7 @@ import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.blockdata.BlockDat
 import io.ncbpfluffybear.fluffysconstruct.api.data.serialize.Serialize;
 import io.ncbpfluffybear.fluffysconstruct.api.inventory.CustomInventory;
 import io.ncbpfluffybear.fluffysconstruct.api.items.FCItem;
+import io.ncbpfluffybear.fluffysconstruct.data.SmelterySystem;
 import io.ncbpfluffybear.fluffysconstruct.items.Clocked;
 import io.ncbpfluffybear.fluffysconstruct.items.InventoryBlock;
 import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
@@ -22,11 +23,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class PersistenceUtils {
 
     private final File dataFolder;
+    private final File blockFolder;
+    private final File smelteryFolder;
     private final Map<Location, Set<DirtyType>> dirtyBlocks;
+    private final Set<UUID> dirtySmelteries;
 
     /**
      * Data is stored in the following format:
@@ -39,19 +44,26 @@ public class PersistenceUtils {
     public PersistenceUtils() {
         File pluginFolder = FCPlugin.getInstance().getDataFolder();
         this.dataFolder = new File(pluginFolder, "data");
+        this.blockFolder = new File(dataFolder, "blocks");
+        this.smelteryFolder = new File(dataFolder, "smelteries");
 
-        if (dataFolder.mkdir()) {
-            ChatUtils.info("Created inventory data folder at " + dataFolder.getPath());
+        if (smelteryFolder.mkdirs()) {
+            ChatUtils.info("Created smeltery data folder at " + smelteryFolder.getPath());
+        }
+
+        if (blockFolder.mkdirs()) {
+            ChatUtils.info("Created smeltery data folder at " + blockFolder.getPath());
         }
 
         this.dirtyBlocks = new HashMap<>();
+        this.dirtySmelteries = new HashSet<>();
     }
 
     /**
      * Loads blocks into repositories
      */
     public void load() {
-        File[] allItems = this.dataFolder.listFiles();
+        File[] allItems = this.blockFolder.listFiles();
         if (allItems == null) {
             ChatUtils.logError("There was a problem reading data files!");
             return;
@@ -86,13 +98,25 @@ public class PersistenceUtils {
                 BlockDataRepository.load(location, config.getConfigurationSection("blockdata"));
             }
         }
+
+        File[] allSmelteries = this.smelteryFolder.listFiles();
+        if (allSmelteries == null) {
+            ChatUtils.logError("There was a problem reading data files!");
+            return;
+        }
+        for (File smelteryFile : allSmelteries) {
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(smelteryFile);
+            SmelterySystem system = new SmelterySystem(config.getConfigurationSection("smeltery").getValues(false));
+            FCPlugin.getSmelteryRepository().addExisting(system.getUuid(), system);
+        }
+
     }
 
     public void save() throws IOException, InvalidConfigurationException {
         // Wipe dirty files
         for (Map.Entry<Location, Set<DirtyType>> dirtyData : dirtyBlocks.entrySet()) {
             if (dirtyData.getValue().contains(DirtyType.WORLD)) { // File needs to be completely wiped
-                File itemFile = new File(dataFolder, Serialize.serializeLocation(dirtyData.getKey()));
+                File itemFile = new File(blockFolder, Serialize.serializeLocation(dirtyData.getKey()));
                 try {
                     Files.deleteIfExists(itemFile.toPath());
                 } catch (IOException e) {
@@ -105,7 +129,7 @@ public class PersistenceUtils {
         for (Map.Entry<Location, Set<DirtyType>> dirtyData : dirtyBlocks.entrySet()) {
 
             FCItem fcItem = FCPlugin.getBlockRepository().getFCItemAt(dirtyData.getKey());
-            File itemFile = new File(dataFolder, Serialize.serializeLocation(dirtyData.getKey()));
+            File itemFile = new File(blockFolder, Serialize.serializeLocation(dirtyData.getKey()));
             YamlConfiguration config = new YamlConfiguration();
 
             if (itemFile.exists()) {
@@ -133,14 +157,32 @@ public class PersistenceUtils {
         }
 
         this.dirtyBlocks.clear();
+
+
+        // Save SmelterySystems
+        for (UUID smelteryId : dirtySmelteries) {
+            SmelterySystem system = FCPlugin.getSmelteryRepository().getSystem(smelteryId);
+            File smelteryFile = new File(smelteryFolder, smelteryId.toString());
+            if (system == null) { // No new system has been placed
+                Files.delete(smelteryFile.toPath());
+                continue;
+            }
+            YamlConfiguration configuration = new YamlConfiguration();
+            configuration.createSection("smeltery", system.serialize());
+            configuration.save(smelteryFile);
+        }
     }
 
-    public void markDirty(Location location, DirtyType dirtyType) {
+    public void markBlockDirty(Location location, DirtyType dirtyType) {
         if (!dirtyBlocks.containsKey(location)) {
             dirtyBlocks.put(location, new HashSet<>());
         }
 
         dirtyBlocks.get(location).add(dirtyType);
-        ChatUtils.broadcast("Dirty @" + location.toString() + "#" + dirtyType);
+        // ChatUtils.broadcast("Dirty @" + location.toString() + "#" + dirtyType);
+    }
+
+    public void markSmelteryDirty(UUID uuid) {
+        this.dirtySmelteries.add(uuid);
     }
 }

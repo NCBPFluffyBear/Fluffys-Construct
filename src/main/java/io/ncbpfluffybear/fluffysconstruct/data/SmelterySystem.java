@@ -1,14 +1,15 @@
 package io.ncbpfluffybear.fluffysconstruct.data;
 
+import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
 import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.blockdata.BlockDataRepository;
 import io.ncbpfluffybear.fluffysconstruct.items.specializeditems.smeltery.SearedTank;
 import io.ncbpfluffybear.fluffysconstruct.setup.Molten;
 import io.ncbpfluffybear.fluffysconstruct.utils.Keys;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,7 +25,7 @@ public class SmelterySystem {
     private final Location controller;
 
     private int maxVolume;
-    private LinkedHashMap<Molten.MoltenMaterial, Integer> contents;
+    private final Map<Molten.MoltenMaterial, Integer> contents;
     private Set<Location> bricks;
     private Set<Location> fuelTanks;
     private boolean active;
@@ -36,6 +37,8 @@ public class SmelterySystem {
         this.fuelTanks = new HashSet<>();
         this.maxVolume = 0;
         this.active = false;
+        this.contents = new LinkedHashMap<>();
+        FCPlugin.getPersistenceUtils().markSmelteryDirty(uuid);
     }
 
     public int calculateTotalLava() {
@@ -76,6 +79,7 @@ public class SmelterySystem {
             contents.put(product.material(), contents.getOrDefault(product.material(), 0) + product.volume() * multiplier);
         }
 
+        FCPlugin.getPersistenceUtils().markSmelteryDirty(uuid);
         return true;
     }
 
@@ -92,6 +96,7 @@ public class SmelterySystem {
 
     public void setActive(boolean active) {
         this.active = active;
+        FCPlugin.getPersistenceUtils().markSmelteryDirty(uuid);
     }
 
     public UUID getUuid() {
@@ -101,6 +106,7 @@ public class SmelterySystem {
     public void addBricks(Collection<Location> bricks) {
         this.bricks.addAll(bricks);
         bricks.forEach(this::assignSystemUUID);
+        FCPlugin.getPersistenceUtils().markSmelteryDirty(uuid);
     }
 
     public void removeBrick(Location brick) {
@@ -114,6 +120,19 @@ public class SmelterySystem {
     public void addFuelTanks(Collection<Location> fuelTanks) {
         this.fuelTanks.addAll(fuelTanks);
         fuelTanks.forEach(this::assignSystemUUID);
+        FCPlugin.getPersistenceUtils().markSmelteryDirty(uuid);
+    }
+
+    public void removeFuelTank(Location fuelTank) {
+        this.bricks.remove(fuelTank);
+    }
+
+    public int getFuel() {
+        int totalFuel = 0;
+        for (Location fuelTank : fuelTanks) {
+            totalFuel += BlockDataRepository.getDataAt(fuelTank).getOrDefault(Keys.LAVA_LEVEL, PersistentDataType.INTEGER, 0);
+        }
+        return totalFuel;
     }
 
     public Set<Location> getFuelTanks() {
@@ -130,17 +149,40 @@ public class SmelterySystem {
 
     public void setMaxVolume(int maxVolume) {
         this.maxVolume = maxVolume;
+        FCPlugin.getPersistenceUtils().markSmelteryDirty(uuid);
     }
 
-    public LinkedHashMap<Molten.MoltenMaterial, Integer> getContents() {
+    public Map<Molten.MoltenMaterial, Integer> getContents() {
         return contents;
+    }
+
+    public SmelterySystem(Map<String, Object> serialized) {
+        this.controller = (Location) serialized.get("controller");
+        this.uuid = UUID.fromString((String) serialized.get("id"));
+        this.bricks = new HashSet<>((List<Location>) serialized.get("bricks"));
+        this.fuelTanks = new HashSet<>((List<Location>) serialized.get("fuelTanks"));
+        this.active = (boolean) serialized.get("active");
+
+        this.contents = new LinkedHashMap<>();
+        Map<String, Object> simpleContents = ((MemorySection) serialized.get("contents")).getValues(false);
+        for (Map.Entry<String, Object> entry : simpleContents.entrySet()) {
+            this.contents.put(Molten.MoltenMaterial.valueOf(entry.getKey()), (Integer) entry.getValue());
+        }
     }
 
     public Map<String, Object> serialize() {
         Map<String, Object> serialized = new HashMap<>();
-        serialized.put("id", uuid);
-        serialized.put("controller", controller.toString());
-        serialized.put("contents", contents);
-        return null;
+        serialized.put("id", uuid.toString());
+        serialized.put("controller", controller);
+        serialized.put("bricks", new ArrayList<>(bricks));
+        serialized.put("fuelTanks", new ArrayList<>(fuelTanks));
+        serialized.put("active", active);
+
+        Map<String, Integer> simpleContents = new LinkedHashMap<>();
+        for (Map.Entry<Molten.MoltenMaterial, Integer> entry : contents.entrySet()) {
+            simpleContents.put(entry.getKey().name(), entry.getValue());
+        }
+        serialized.put("contents", simpleContents);
+        return serialized;
     }
 }

@@ -2,6 +2,7 @@ package io.ncbpfluffybear.fluffysconstruct.api.web;
 
 import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
 import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.blockdata.BlockData;
+import io.ncbpfluffybear.fluffysconstruct.data.SmelterySystem;
 import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
 import org.bukkit.NamespacedKey;
 
@@ -16,7 +17,6 @@ import java.util.function.Predicate;
 public class WebUtils {
     // the folder inside the base server folder which contains website files
     private static final Map<String, WebResource> RESOURCES = new HashMap<>();
-    private static final Map<UUID, SmelteryPage> SMELTERY_PAGES = new HashMap<>();
     private static WebResource ERROR_PAGE = null;
 
     public static NamespacedKey UUID_URL = new NamespacedKey(FCPlugin.getInstance(), "url_uuid");
@@ -33,22 +33,10 @@ public class WebUtils {
             addResource("invdisplay.html");
             addResource("progress.html");
             addResource("styles.css");
-            addResource("smelteryview.html");
         } catch (IOException e) {
             ChatUtils.logError("Failed to add a web resource " + e);
         }
 
-    }
-
-    public static UUID addSmelteryPage(BlockData data) {
-        SmelteryPage page = new SmelteryPage(data);
-        UUID uuid = UUID.randomUUID();
-        SMELTERY_PAGES.put(uuid, page);
-        return uuid;
-    }
-
-    public static boolean hasSmelteryPage(UUID uuid) {
-        return SMELTERY_PAGES.containsKey(uuid);
     }
 
     public static void addResource(String name) throws IOException {
@@ -78,11 +66,12 @@ public class WebUtils {
             case SMELTERY -> {
                 UUID uuid = UUID.fromString(request.split("smeltery/")[1]);
                 ChatUtils.warn("Loading smeltery " + uuid);
-                if (!SMELTERY_PAGES.containsKey(uuid)) {
+                SmelterySystem system = FCPlugin.getSmelteryRepository().getSystem(uuid);
+                if (system == null) {
                     return ERROR_PAGE.getHtml();
                 }
 
-                byte[] response = SMELTERY_PAGES.get(uuid).getPage();
+                byte[] response = new SmelteryPage(system).getPage();
                 if (response == null) return ERROR_PAGE.getHtml();
                 return response;
             }

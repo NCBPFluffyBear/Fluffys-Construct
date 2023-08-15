@@ -3,8 +3,11 @@ package io.ncbpfluffybear.fluffysconstruct.items.specializeditems.smeltery;
 import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
 import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.blockdata.BlockData;
 import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.blockdata.BlockDataRepository;
+import io.ncbpfluffybear.fluffysconstruct.data.SmelterySystem;
 import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.Constants;
+import io.ncbpfluffybear.fluffysconstruct.utils.Keys;
+import io.ncbpfluffybear.fluffysconstruct.utils.SmelteryUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -18,12 +21,21 @@ import javax.annotation.Nonnull;
 
 public class SearedTank extends SearedBricks {
 
-    public static final NamespacedKey LAVA_LEVEL = new NamespacedKey(FCPlugin.getInstance(), "lava_level"); // Byte exists or not
-
     private static final int CAPACITY_MB = 4000;
 
     public SearedTank(String key, int id, Material material, String name, String... lore) {
         super(key, id, material, name, lore);
+    }
+
+    @Override
+    public void onBreak(Location location) {
+        SmelterySystem system = SmelteryUtils.getSystem(location);
+        if (system == null) {
+            return; // Not linked to a smeltery
+        }
+
+        system.removeFuelTank(location);
+        system.setActive(false);
     }
 
     @Override
@@ -57,19 +69,19 @@ public class SearedTank extends SearedBricks {
     }
 
     private static int getLavaLevel(@Nonnull BlockData blockData) {
-        return blockData.getOrDefault(LAVA_LEVEL, PersistentDataType.INTEGER, 0);
+        return blockData.getOrDefault(Keys.LAVA_LEVEL, PersistentDataType.INTEGER, 0);
     }
 
     public static int getLavaLevel(Location location) {
         int defaultValue = 0;
         if (BlockDataRepository.hasData(location)) {
-            return BlockDataRepository.getDataAt(location).getOrDefault(LAVA_LEVEL, PersistentDataType.INTEGER, defaultValue);
+            return BlockDataRepository.getDataAt(location).getOrDefault(Keys.LAVA_LEVEL, PersistentDataType.INTEGER, defaultValue);
         }
         return defaultValue;
     }
 
     private static void setLavaLevel(BlockData blockData, int level) {
-        blockData.set(LAVA_LEVEL, PersistentDataType.INTEGER, level);
+        blockData.set(Keys.LAVA_LEVEL, PersistentDataType.INTEGER, level);
 
         Block tank = blockData.getLocation().getBlock();
         if (level > 0) {

@@ -16,6 +16,7 @@ import io.ncbpfluffybear.fluffysconstruct.items.Placeable;
 import io.ncbpfluffybear.fluffysconstruct.setup.InventoryTemplate;
 import io.ncbpfluffybear.fluffysconstruct.setup.Molten;
 import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
+import io.ncbpfluffybear.fluffysconstruct.utils.Constants;
 import io.ncbpfluffybear.fluffysconstruct.utils.EntityUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.ItemUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.Keys;
@@ -36,9 +37,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Controller extends Placeable implements InventoryBlock, Clocked {
 
@@ -71,6 +74,7 @@ public class Controller extends Placeable implements InventoryBlock, Clocked {
 
     @Override
     public void onPlace(Location location) {
+        // Create SmelterySystem
         SmelteryUtils.createSystem(location);
     }
 
@@ -151,14 +155,19 @@ public class Controller extends Placeable implements InventoryBlock, Clocked {
         if (playerInv.contains(meltable)) {
             switch (hotbarButton) {
                 case 1 -> {
-                    melt(system, products, 1);
-                    consumeMaterial(matLocations, 1);
+                    if (melt(system, products, 1)) {
+                        consumeMaterial(matLocations, 1);
+                    }
                 }
                 case 2 -> {
-                    melt(system, products, 32);
+                    if (melt(system, products, 32)) {
+                        consumeMaterial(matLocations, 32);
+                    }
                 }
                 case 3 -> {
-                    melt(system, products, 64);
+                    if (melt(system, products, 64)) {
+                        consumeMaterial(matLocations, 64);
+                    }
                 }
                 default -> {
                     return;
@@ -194,11 +203,13 @@ public class Controller extends Placeable implements InventoryBlock, Clocked {
         }
     }
 
-    private void melt(SmelterySystem system, List<Molten.Product> products, int multiplier) {
+    private boolean melt(SmelterySystem system, List<Molten.Product> products, int multiplier) {
         if (system.melt(products, multiplier)) {
             system.getController().getWorld().playSound(system.getController(), Sound.BLOCK_FIRE_EXTINGUISH, 1f, -5f);
+            return true;
         } else {
             system.getController().getWorld().playSound(system.getController(), Sound.UI_BUTTON_CLICK, 1f, -5f);
+            return false;
         }
     }
 
@@ -227,8 +238,8 @@ public class Controller extends Placeable implements InventoryBlock, Clocked {
         Block controller = controllerLoc.getBlock();
         CustomInventory inv = FCPlugin.getInventoryRepository().getInventory(controllerLoc);
         // Scan base
-        List<Location> smelteryBlocks = new ArrayList<>();
-        List<Location> tanks = new ArrayList<>();
+        Set<Location> smelteryBlocks = new HashSet<>();
+        Set<Location> tanks = new HashSet<>();
         BlockFace smelteryBack = ((Directional) controller.getBlockData()).getFacing().getOppositeFace();
         BlockFace smelteryRight = getRight(smelteryBack);
 
@@ -257,12 +268,12 @@ public class Controller extends Placeable implements InventoryBlock, Clocked {
                 }
 
                 if (!(fcBlock instanceof SearedBricks)) {
-                    if (depth == 0) { // Only give a hint if there is no functional smeltery
+                    if (depth == 0) { // Only give a hint if there is no wall at all yet
                         showInvalid(controllerLoc, inv, wallBlock.getLocation(), player);
                         return false;
                     }
 
-                    break search; // Don't add these blocks
+                    break search; // Don't add these blocks D
                 }
 
                 wallRing.add(wallBlock.getLocation());
@@ -281,6 +292,7 @@ public class Controller extends Placeable implements InventoryBlock, Clocked {
         system.addBricks(smelteryBlocks);
         system.addFuelTanks(tanks);
         system.setActive(true);
+        system.setMaxVolume(schematic.getBaseVolume() * depth * Constants.BUCKET_MB);
 
         ChatUtils.sendMsg(player, "ITEMS.CONTROLLER.SUCCESSFUL_CREATION", depth);
         inv.setItem(RESCAN_SLOT, new CustomItem(Material.LIME_STAINED_GLASS_PANE, "&aSmeltery Created", "&7Depth: " + depth));

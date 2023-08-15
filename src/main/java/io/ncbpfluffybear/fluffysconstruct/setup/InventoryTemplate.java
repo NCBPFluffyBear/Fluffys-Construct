@@ -1,20 +1,27 @@
 package io.ncbpfluffybear.fluffysconstruct.setup;
 
+import io.ncbpfluffybear.fluffysconstruct.FCPlugin;
+import io.ncbpfluffybear.fluffysconstruct.api.data.persistent.blockdata.BlockDataRepository;
 import io.ncbpfluffybear.fluffysconstruct.api.inventory.CustomInventory;
 import io.ncbpfluffybear.fluffysconstruct.api.inventory.InvClickHandler;
 import io.ncbpfluffybear.fluffysconstruct.api.items.CustomItem;
+import io.ncbpfluffybear.fluffysconstruct.api.web.WebUtils;
 import io.ncbpfluffybear.fluffysconstruct.items.specializeditems.Furnace;
 import io.ncbpfluffybear.fluffysconstruct.items.specializeditems.smeltery.Controller;
+import io.ncbpfluffybear.fluffysconstruct.utils.ChatUtils;
 import io.ncbpfluffybear.fluffysconstruct.utils.InventoryUtils;
+import io.ncbpfluffybear.fluffysconstruct.utils.Keys;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 public enum InventoryTemplate {
 
@@ -41,22 +48,9 @@ public enum InventoryTemplate {
             new SlotTemplate(10, new CustomItem(Material.BOOK, "&6Instructions"), new InvClickHandler.Advanced() {
                 @Override
                 public boolean onClick(Player player, CustomInventory customInv, int slot, ItemStack clickedItem, ClickType clickType) {
-//                    if (data.has(WebUtils.UUID_URL)) {
-//                        String uuidUrl = data.get(WebUtils.UUID_URL, PersistentDataType.STRING);
-//                        if (uuidUrl != null) {
-//                            UUID uuid = UUID.fromString(uuidUrl);
-//                            if (WebUtils.hasSmelteryPage(uuid)) {
-//                                ChatUtils.warn("http://127.0.0.1/smeltery/" + uuidUrl);
-//                                ChatUtils.send(player, "http://127.0.0.1/smeltery/" + uuidUrl);
-//                                return false;
-//                            }
-//                        }
-//                    }
-//
-//                    UUID uuid = WebUtils.addSmelteryPage(data);
-//                    data.set(WebUtils.UUID_URL, PersistentDataType.STRING, uuid.toString());
-//                    ChatUtils.warn("http://127.0.0.1/smeltery/" + uuid);
-//                    ChatUtils.send(player, "http://127.0.0.1/smeltery/" + uuid);
+                    String uuid = BlockDataRepository.getDataAt(customInv.getLocation()).get(Keys.SYSTEM_UUID, PersistentDataType.STRING);
+                    ChatUtils.warn("http://127.0.0.1/smeltery/" + uuid);
+                    ChatUtils.send(player, "http://127.0.0.1/smeltery/" + uuid);
                     return false;
                 }
             }),

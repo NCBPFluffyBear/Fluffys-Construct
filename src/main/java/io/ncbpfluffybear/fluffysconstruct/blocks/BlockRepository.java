@@ -27,6 +27,10 @@ public class BlockRepository {
         this.placedBlocks.put(location, fcItem);
     }
 
+    public void removeFCItemAt(Location location) {
+        this.placedBlocks.remove(location);
+    }
+
     @Nullable
     public FCItem getFCItemAt(Location location) {
         return placedBlocks.get(location);

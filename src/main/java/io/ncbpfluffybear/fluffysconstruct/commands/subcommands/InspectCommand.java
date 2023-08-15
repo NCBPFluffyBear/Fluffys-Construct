@@ -41,6 +41,7 @@ public class InspectCommand implements SubCommand {
             blockData.getAll().forEach((k, v) -> {
                 ChatUtils.sendMsg(player, "COMMANDS.INSPECT.CUSTOM_DATA", k, v.getClass().getSimpleName(), String.valueOf(v));
             });
+            return;
         }
 
         switch (args[1]) {

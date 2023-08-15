@@ -23,6 +23,18 @@ public class SmelteryRepository {
     }
 
     public SmelterySystem getSystem(String uuid) {
-        return smelteries.get(UUID.fromString(uuid));
+        return getSystem(UUID.fromString(uuid));
+    }
+
+    public SmelterySystem getSystem(UUID uuid) {
+        return smelteries.get(uuid);
+    }
+
+    public void addExisting(UUID uuid, SmelterySystem smelterySystem) {
+        this.smelteries.put(uuid, smelterySystem);
+    }
+
+    public Map<UUID, SmelterySystem> getAll() {
+        return smelteries;
     }
 }

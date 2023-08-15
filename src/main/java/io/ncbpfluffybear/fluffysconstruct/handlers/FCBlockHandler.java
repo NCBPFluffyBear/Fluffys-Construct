@@ -40,7 +40,7 @@ public class FCBlockHandler implements Listener {
         }
 
         FCPlugin.getBlockRepository().addFCItemAt(e.getBlock().getLocation(), item);
-        FCPlugin.getPersistenceUtils().markDirty(e.getBlock().getLocation(), DirtyType.WORLD);
+        FCPlugin.getPersistenceUtils().markBlockDirty(e.getBlock().getLocation(), DirtyType.WORLD);
 
         Location location = e.getBlockPlaced().getLocation();
 
@@ -54,7 +54,7 @@ public class FCBlockHandler implements Listener {
             if (inventory != null) {
                 FCPlugin.getInventoryRepository().putInventory(location, inventory); // Create an empty inventory for this block
             }
-            FCPlugin.getPersistenceUtils().markDirty(e.getBlock().getLocation(), DirtyType.INVENTORY);
+            FCPlugin.getPersistenceUtils().markBlockDirty(e.getBlock().getLocation(), DirtyType.INVENTORY);
         }
 
         ((Placeable) item).onPlace(location);
@@ -73,6 +73,7 @@ public class FCBlockHandler implements Listener {
 
         if (item != null) {
             e.setDropItems(false);
+            FCPlugin.getBlockRepository().removeFCItemAt(b.getLocation());
         }
     }
 
@@ -115,7 +116,7 @@ public class FCBlockHandler implements Listener {
         ((Placeable) item).onBreak(location); // All placed blocks MUST be placeable
 
         location.getWorld().dropItem(location, item.getItemStack());
-        FCPlugin.getPersistenceUtils().markDirty(e.getBlock().getLocation(), DirtyType.WORLD);
+        FCPlugin.getPersistenceUtils().markBlockDirty(e.getBlock().getLocation(), DirtyType.WORLD);
     }
 
     @EventHandler
